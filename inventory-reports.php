@@ -69,7 +69,7 @@
                     <tbody>
                     <tbody>
     <?php
-      foreach ($products as $index => $product) {
+    foreach ($products as $index => $product) {
         echo "<tr>";
         echo "<td>" . ($index + 1) . "</td>";
         echo "<td>" . htmlspecialchars($product['category']) . "</td>";
@@ -84,16 +84,15 @@
                     <button type='button' class='btn btn-sm btn-primary' data-toggle='modal' data-target='#editProductModal' data-id='" . htmlspecialchars($product['id']) . "' data-name='" . htmlspecialchars($product['name']) . "' data-cost-price='" . htmlspecialchars($product['cost_price']) . "' data-price='" . htmlspecialchars($product['price']) . "' data-selling-price='" . htmlspecialchars($product['selling_price']) . "'>Edit</button>
                 </form>
                 <form id='delete-form-" . htmlspecialchars($product['id']) . "' method='POST' action='product-delete.php'>
-                    <input type='hidden' id='deleteProductId' name='id' value='" . htmlspecialchars($product['id']) . "'>
+                    <input type='hidden' name='id' value='" . htmlspecialchars($product['id']) . "'>
                     <button type='button' class='btn btn-sm btn-danger' data-toggle='modal' data-target='#deleteProductModal' data-id='" . htmlspecialchars($product['id']) . "'>Delete</button>
                 </form>
             </div>
         </td>";
         echo "</tr>";
-      }
+    }
     ?>
 </tbody>
-
 
                   </table>
                 </div>
@@ -142,13 +141,23 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('editPrice').value = price;
         document.getElementById('editSellingPrice').value = sellingPrice;
         document.getElementById('editProductIdLabel').textContent = `Product ID: ${id}`;
-      } else if (target === '#deleteProductModal') {
-        document.getElementById('deleteProductId').value = id;
       }
     });
   });
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-toggle="modal"]').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const target = this.getAttribute('data-target');
+
+            if (target === '#deleteProductModal') {
+                document.getElementById('deleteProductId').value = id;
+            }
+        });
+    });
+});
 </script>
 
 
