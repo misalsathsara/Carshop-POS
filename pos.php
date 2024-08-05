@@ -194,16 +194,16 @@ $conn->close();
                                     </tfoot>
                                     <tbody>
                                         <?php
-                                            foreach ($products as $index => $product) {
-                                                echo "<tr data-id='" . ($index + 1) . "' data-category='" . htmlspecialchars($product['category']) . "' data-name='" . htmlspecialchars($product['name']) . "' data-price='" . htmlspecialchars($product['price']) . "' data-selling-price='" . htmlspecialchars($product['selling_price']) . "'>";
-                                                echo "<td>" . ($index + 1) . "</td>";
-                                                echo "<td>" . htmlspecialchars($product['category']) . "</td>";
-                                                echo "<td>" . htmlspecialchars($product['name']) . "</td>";
-                                                echo "<td>" . htmlspecialchars($product['price']) . "</td>";
-                                                echo "<td>" . htmlspecialchars($product['selling_price']) . "</td>";
-                                                echo "</tr>";
-                                            }
-                                        ?>
+            foreach ($products as $index => $product) {
+                echo "<tr data-id='" . ($index + 1) . "' data-category='" . htmlspecialchars($product['category']) . "' data-name='" . htmlspecialchars($product['name']) . "' data-price='" . htmlspecialchars($product['price']) . "' data-selling-price='" . htmlspecialchars($product['selling_price']) . "'>";
+                echo "<td>" . ($index + 1) . "</td>";
+                echo "<td>" . htmlspecialchars($product['category']) . "</td>";
+                echo "<td>" . htmlspecialchars($product['name']) . "</td>";
+                echo "<td>" . htmlspecialchars($product['price']) . "</td>";
+                echo "<td>" . htmlspecialchars($product['selling_price']) . "</td>";
+                echo "</tr>";
+            }
+        ?>
                                     </tbody>
                                 </table>
 
@@ -224,7 +224,7 @@ $conn->close();
                                         <div class="flex-grow-1">
                                             <select id="customer" name="customer_id"
                                                 class="form-control js-data-example-ajax customer-change">
-                                                <!-- <option value="">--select-customer--</option> -->
+                                                <option value="">--select-customer--</option>
                                                 <?php foreach ($customers as $customer): ?>
                                                 <option value="<?php echo htmlspecialchars($customer['id']); ?>">
                                                     <?php echo htmlspecialchars($customer['name']); ?>
@@ -300,6 +300,7 @@ $conn->close();
                             <div id="cart">
                                 <div class="card-body pt-0">
                                     <div class="table-responsive pos-cart-table border">
+
                                         <table class="table table-align-middle mb-0" id="detailTable">
                                             <thead class="text-muted">
                                                 <tr>
@@ -310,36 +311,47 @@ $conn->close();
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                <!-- Rows will be added here dynamically -->
                                             </tbody>
                                         </table>
-
                                     </div>
                                 </div>
                                 <div class="box p-3">
                                     <dl class="row">
                                         <dt class="col-6">Sub total :</dt>
-                                        <dd class="col-6 text-right">0 $</dd>
-                                        <dt class="col-6">Product discount :</dt>
-                                        <dd class="col-6 text-right">0 $
-                                        </dd>
+                                        <dd class="col-6 text-right" id="subtotal">0 Rs.</dd>
+
+                                        <!-- <dt class="col-6">Product discount :</dt>
+                                        <dd class="col-6 text-right">0 Rs.</dd> -->
+
                                         <dt class="col-6">Extra discount :</dt>
                                         <dd class="col-6 text-right">
                                             <button id="extra_discount" class="btn btn-sm" type="button"
-                                                data-toggle="modal" data-target="#add-discount"><i
-                                                    class="tio-edit"></i></button>0.00 $
+                                                data-toggle="modal" data-target="#add-discount">
+                                                <i class="fas fa-pen"></i>
+                                            </button> <span id="discount_amount">0.00 Rs.</span>
                                         </dd>
-                                        <dt class="col-6">Coupon discount :</dt>
+
+
+                                        <!-- <dt class="col-6">Coupon discount :</dt>
                                         <dd class="col-6 text-right">
                                             <button id="coupon_discount" class="btn btn-sm" type="button"
-                                                data-toggle="modal" data-target="#add-coupon-discount"><i
-                                                    class="tio-edit"></i></button>0 $
-                                        </dd>
+                                                data-toggle="modal" data-target="#add-coupon-discount">
+                                                <i class="fas fa-pen"></i>
+                                            </button> 0 Rs.
+                                        </dd> -->
+
                                         <dt class="col-6">Tax :</dt>
-                                        <dd class="col-6 text-right">0 $</dd>
+                                        <dd class="col-6 text-right">
+                                            <span id="tax_amount" contenteditable="true" class="editable"
+                                                data-value="0">0 %</span>
+                                        </dd>
+
+
+
                                         <dt class="col-6">Total :</dt>
                                         <dd class="col-6 text-right h4 b">
-                                            <span id="total_price">0</span>
-                                            $
+                                            <span id="total_price">0</span> Rs.
                                         </dd>
                                     </dl>
                                     <div class="row g-2">
@@ -401,11 +413,12 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="modal fade" id="add-discount" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title">Extra discount</h5>
+                                                <h5 class="modal-title">Extra Discount</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -413,24 +426,11 @@ $conn->close();
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
-                                                    <div class="form-group col-sm-6">
-                                                        <label for>Discount</label>
+                                                    <div class="form-group col-sm-12">
+                                                        <label for="dis_amount">Discount Amount</label>
                                                         <input type="number" id="dis_amount" class="form-control"
-                                                            name="discount" step="0.01" min="0">
-                                                    </div>
-                                                    <div class="form-group col-sm-6">
-                                                        <label for>Type</label>
-                                                        <select name="type" id="type_ext_dis"
-                                                            class="form-control type_ext_dis">
-                                                            <option value="amount" selected>
-                                                                Amount
-                                                                ($)
-                                                            </option>
-                                                            <option value="percent">
-                                                                Percent
-                                                                (%)
-                                                            </option>
-                                                        </select>
+                                                            name="discount" step="0.01" min="0"
+                                                            placeholder="Enter discount amount in Rs.">
                                                     </div>
                                                 </div>
                                                 <div class="d-flex justify-content-end">
@@ -441,6 +441,8 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
+
+
                                 <div class="modal fade" id="add-coupon-discount" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -1159,10 +1161,46 @@ $conn->close();
         }
     }, 1000));
 
+
     document.addEventListener('DOMContentLoaded', function() {
         const dataTable = document.getElementById('dataTable');
         const detailTableBody = document.querySelector('#detailTable tbody');
+        const totalPriceElement = document.getElementById('total_price');
+        const extraDiscountElement = document.getElementById('extra_discount');
+        let totalPrice = 0;
+        let discountAmount = 0;
 
+        // Function to calculate subtotal
+        function calculateSubtotal() {
+            let subtotal = 0;
+            document.querySelectorAll('#detailTable .selling-price').forEach(function(cell) {
+                subtotal += parseFloat(cell.textContent) || 0;
+            });
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' Rs.';
+        }
+
+        // Function to calculate and update total price
+        function calculateTotal() {
+            totalPrice = 0;
+            document.querySelectorAll('#detailTable .selling-price').forEach(function(cell) {
+                totalPrice += parseFloat(cell.textContent) || 0;
+            });
+            const newTotalPrice = totalPrice - discountAmount;
+            totalPriceElement.textContent = newTotalPrice < 0 ? '0.00' : newTotalPrice.toFixed(2);
+        }
+
+        // Function to apply extra discount
+        function applyDiscount(amount) {
+            discountAmount = parseFloat(amount) || 0;
+            calculateTotal();
+            // Update the discount display directly next to the button
+            const buttonTextElement = extraDiscountElement.nextElementSibling;
+            if (buttonTextElement) {
+                buttonTextElement.textContent = discountAmount.toFixed(2) + ' Rs.';
+            }
+        }
+
+        // Event listener for row clicks on the data table
         dataTable.addEventListener('click', function(event) {
             const row = event.target.closest('tr');
             if (row && row.dataset.id) {
@@ -1179,41 +1217,50 @@ $conn->close();
             `;
                 detailTableBody.appendChild(newRow);
 
-                // Optional: Add delete functionality
-                detailTableBody.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('delete-btn')) {
-                        e.target.closest('tr').remove();
-                    }
-                });
-
-                // Handle qty input validation and update total price
-                detailTableBody.addEventListener('keydown', function(e) {
-                    if (e.target.classList.contains('qty-cell') && e.key === 'Enter') {
-                        e.preventDefault(); // Prevent the default behavior of Enter key
-                        const qtyCell = e.target;
-                        let qty = qtyCell.textContent.trim().replace(/,/g, ''); // Remove commas
-                        qty = parseInt(qty, 10);
-
-                        if (!isNaN(qty) && qty > 0) {
-                            const sellingPriceCell = qtyCell
-                                .nextElementSibling; // The selling price cell
-                            const originalSellingPrice = parseFloat(sellingPriceCell
-                                .getAttribute('data-original-price')); // Get original price
-                            const totalSellingPrice = (originalSellingPrice * qty).toFixed(2);
-                            sellingPriceCell.textContent = totalSellingPrice;
-
-                            // Move focus away from qty cell
-                            qtyCell.blur(); // Trigger blur event
-                        } else {
-                            alert('Please enter a valid number.');
-                            qtyCell.textContent = '1'; // Reset to default value
-                        }
-                    }
-                }, true);
+                // Recalculate subtotal and total price
+                calculateSubtotal();
+                calculateTotal();
             }
         });
 
-        // Handle qty input validation
+        // Event listener for delete button clicks
+        detailTableBody.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-btn')) {
+                e.target.closest('tr').remove();
+                calculateSubtotal();
+                calculateTotal();
+            }
+        });
+
+        // Event listener for quantity cell input validation and total price update
+        detailTableBody.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('qty-cell') && e.key === 'Enter') {
+                e.preventDefault(); // Prevent the default behavior of Enter key
+                const qtyCell = e.target;
+                let qty = qtyCell.textContent.trim().replace(/,/g, ''); // Remove commas
+                qty = parseInt(qty, 10);
+
+                if (!isNaN(qty) && qty > 0) {
+                    const sellingPriceCell = qtyCell.nextElementSibling; // The selling price cell
+                    const originalSellingPrice = parseFloat(sellingPriceCell.getAttribute(
+                        'data-original-price')); // Get original price
+                    const totalSellingPrice = (originalSellingPrice * qty).toFixed(2);
+                    sellingPriceCell.textContent = totalSellingPrice;
+
+                    // Move focus away from qty cell
+                    qtyCell.blur(); // Trigger blur event
+
+                    // Recalculate subtotal and total price
+                    calculateSubtotal();
+                    calculateTotal();
+                } else {
+                    alert('Please enter a valid number.');
+                    qtyCell.textContent = '1'; // Reset to default value
+                }
+            }
+        }, true);
+
+        // Event listener for quantity cell input validation on blur
         detailTableBody.addEventListener('blur', function(e) {
             if (e.target.classList.contains('qty-cell')) {
                 let qty = e.target.textContent.trim().replace(/,/g, ''); // Remove commas
@@ -1221,8 +1268,20 @@ $conn->close();
                     e.target.textContent = '1'; // Reset to default value
                     alert('Please enter a valid number.');
                 }
+
+                // Recalculate subtotal and total price
+                calculateSubtotal();
+                calculateTotal();
             }
         }, true);
+
+        // Event listener for the modal submit button
+        document.querySelector('#add-discount .extra-discount').addEventListener('click', function() {
+            const discountAmount = parseFloat(document.getElementById('dis_amount').value) || 0;
+            applyDiscount(discountAmount);
+            // Close the modal
+            $('#add-discount').modal('hide');
+        });
     });
     </script>
 </body>

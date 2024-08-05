@@ -23,7 +23,7 @@
 
         <!-- Navbar Search -->
         <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-            <a href="pos.php" class="btn btn-primary">
+            <a href="pos.php" class="btn btn-primary" target="_blank">
                 POS
             </a>
         </form>
