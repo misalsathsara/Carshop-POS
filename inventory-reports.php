@@ -49,7 +49,7 @@
                                     <th>ID</th>
                                     <th>Category</th>
                                     <th>Name</th>
-                                    <th>wholesale Cost</th>
+                                    <th>Wholesale Cost</th>
                                     <th>Item Price</th>
                                     <th>Item Price</th>
                                     <th>Selling Price</th>
@@ -63,7 +63,7 @@
                                     <th>ID</th>
                                     <th>Category</th>
                                     <th>Name</th>
-                                    <th>wholesale Cost</th>
+                                    <th>Wholesale Cost</th>
                                     <th>Item Price</th>
                                     <th>Item Price</th>
                                     <th>Selling Price</th>
