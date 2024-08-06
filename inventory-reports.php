@@ -90,7 +90,9 @@ foreach ($products as $index => $product) {
         <div class='d-flex'>
             <form id='edit-form-" . htmlspecialchars($product['id']) . "' method='GET' action='product-edit.php' class='mr-2'>
                 <input type='hidden' name='edit' value='" . htmlspecialchars($product['id']) . "'>
-                <button type='button' class='btn btn-sm btn-primary' data-toggle='modal' data-target='#editProductModal' 
+                <button type='button' class='btn btn-sm btn-primary' 
+                    data-toggle='modal' 
+                    data-target='#editProductModal' 
                     data-id='" . htmlspecialchars($product['id']) . "' 
                     data-name='" . htmlspecialchars($product['name']) . "' 
                     data-cost-price='" . htmlspecialchars($product['cost_price']) . "' 
@@ -98,7 +100,11 @@ foreach ($products as $index => $product) {
                     data-price='" . htmlspecialchars($product['price']) . "' 
                     data-selling-price='" . htmlspecialchars($product['selling_price']) . "' 
                     data-warranty='" . htmlspecialchars($product['warranty']) . "' 
-                    data-stock='" . htmlspecialchars($product['stock']) . "'>Edit</button>
+                    data-stock='" . htmlspecialchars($product['stock']) . "' 
+                    data-discount-quantities='" . htmlspecialchars($product['discount_quantities']) . "' 
+                    data-discount-prices='" . htmlspecialchars($product['discount_prices']) . "'>
+                    Edit
+                </button>
             </form>
             <form id='delete-form-" . htmlspecialchars($product['id']) . "' method='POST' action='product-delete.php'>
                 <input type='hidden' name='id' value='" . htmlspecialchars($product['id']) . "'>
@@ -109,6 +115,8 @@ foreach ($products as $index => $product) {
     echo "</tr>";
 }
 ?>
+
+
 
                             </tbody>
 
@@ -167,7 +175,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Set the selected value for the warranty
                 const warrantySelect = document.getElementById('editWarranty');
-                warrantySelect.value = warranty; // Set the value of the select input
+                warrantySelect.value = warranty;
+
+                // Populate discount fields
+                const discountQuantities = this.getAttribute('data-discount-quantities').split(
+                    ',');
+                const discountPrices = this.getAttribute('data-discount-prices').split(',');
+
+                document.getElementById('quantity1').value = discountQuantities[0] || '';
+                document.getElementById('price1').value = discountPrices[0] || '';
+                document.getElementById('quantity2').value = discountQuantities[1] || '';
+                document.getElementById('price2').value = discountPrices[1] || '';
+                document.getElementById('quantity3').value = discountQuantities[2] || '';
+                document.getElementById('price3').value = discountPrices[2] || '';
             }
         });
     });

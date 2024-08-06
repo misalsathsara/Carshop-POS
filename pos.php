@@ -194,34 +194,6 @@ $conn->close();
                                                 </div>
                                             </div>
 
-                                            <script>
-                                            document.addEventListener('DOMContentLoaded', () => {
-                                                const searchInput = document.getElementById('search');
-                                                const tableRows = document.querySelectorAll(
-                                                    '#dataTable tbody tr');
-
-                                                searchInput.addEventListener('input', () => {
-                                                    const query = searchInput.value.toLowerCase();
-
-                                                    tableRows.forEach(row => {
-                                                        const id = row.getAttribute('data-id')
-                                                            .toLowerCase();
-                                                        const category = row.getAttribute(
-                                                            'data-category').toLowerCase();
-                                                        const name = row.getAttribute(
-                                                            'data-name').toLowerCase();
-
-                                                        if (id.includes(query) || category
-                                                            .includes(query) || name.includes(
-                                                                query)) {
-                                                            row.style.display = '';
-                                                        } else {
-                                                            row.style.display = 'none';
-                                                        }
-                                                    });
-                                                });
-                                            });
-                                            </script>
                                         </form>
                                     </div>
                                 </div>
@@ -268,6 +240,23 @@ $conn->close();
                                     </tbody>
                                 </table>
 
+                                <script>
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    // Initialize DataTables
+                                    const dataTable = $('#dataTable').DataTable({
+                                        "pageLength": 10,
+                                        "lengthChange": false,
+                                        "pagingType": "simple_numbers",
+                                        "dom": '<"top"fi>rt<"bottom"lp><"clear">',
+                                    });
+
+                                    // Custom search input
+                                    const searchInput = document.getElementById('search');
+                                    searchInput.addEventListener('input', () => {
+                                        dataTable.search(searchInput.value).draw();
+                                    });
+                                });
+                                </script>
 
                             </div>
                             <div class="table-responsive mt-4">
@@ -1227,17 +1216,6 @@ $conn->close();
     }, 1000));
 
 
-
-    $(document).ready(function() {
-        $('#dataTable').DataTable({
-            "pageLength": 10, // Number of rows to display per page
-            "lengthChange": false, // Disable the length change dropdown
-            "pagingType": "simple_numbers", // Simplified pagination controls
-            "dom": '<"top"fi>rt<"bottom"lp><"clear">' // Remove the search input
-        });
-    });
-
-
     document.addEventListener('DOMContentLoaded', function() {
         const dataTable = document.getElementById('dataTable');
         const detailTableBody = document.querySelector('#detailTable tbody');
@@ -1253,8 +1231,11 @@ $conn->close();
         // Function to calculate subtotal
         function calculateSubtotal() {
             let subtotal = 0;
-            document.querySelectorAll('#detailTable .selling-price').forEach(function(cell) {
-                subtotal += parseFloat(cell.textContent) || 0;
+            document.querySelectorAll('#detailTable tbody tr').forEach(function(row) {
+                const qty = parseFloat(row.querySelector('.qty-cell').textContent) || 0;
+                const price = parseFloat(row.querySelector('.selling-price').getAttribute(
+                    'data-original-price')) || 0;
+                subtotal += qty * price;
             });
             subtotalElement.textContent = subtotal.toFixed(2) + ' Rs.';
             return subtotal;
@@ -1339,11 +1320,6 @@ $conn->close();
                 qty = parseInt(qty, 10);
 
                 if (!isNaN(qty) && qty > 0) {
-                    const sellingPriceCell = cell.nextElementSibling;
-                    const originalSellingPrice = parseFloat(sellingPriceCell.getAttribute(
-                        'data-original-price'));
-                    const totalSellingPrice = (originalSellingPrice * qty).toFixed(2);
-                    sellingPriceCell.textContent = totalSellingPrice;
                     cell.blur(); // Trigger blur event
                     calculateTotal();
                 } else {
@@ -1375,12 +1351,6 @@ $conn->close();
                 if (!/^\d+$/.test(qty)) {
                     cell.textContent = '1'; // Reset to default value
                     alert('Please enter a valid number.');
-                } else {
-                    const sellingPriceCell = cell.nextElementSibling;
-                    const originalSellingPrice = parseFloat(sellingPriceCell.getAttribute(
-                        'data-original-price'));
-                    const totalSellingPrice = (originalSellingPrice * parseInt(qty, 10)).toFixed(2);
-                    sellingPriceCell.textContent = totalSellingPrice;
                 }
                 calculateTotal();
             } else if (cell.classList.contains('selling-price')) {
