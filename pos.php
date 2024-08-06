@@ -41,9 +41,61 @@ $conn->close();
     <link rel="stylesheet" href="./assets/admin/css/pos.css" />
     <link rel="stylesheet" href="./assets/admin/css/toastr.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
     <style>
     .text-decoration {
         text-decoration: line-through;
+    }
+
+    /* Customize DataTables to match your existing table style */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.5em 1em;
+        margin: 0 0.1em;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        background: #f8f9fa;
+        color: #333;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #e9ecef;
+        border-color: #ccc;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        padding: 0.5em;
+    }
+
+    .dataTables_wrapper .dataTables_length select {
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        padding: 0.5em;
+    }
+
+    .dataTables_wrapper .dataTables_info {
+        padding: 0.5em;
+        color: #333;
+    }
+
+    /* Hide DataTables search box */
+    .dataTables_wrapper .dataTables_filter {
+        display: none;
     }
     </style>
 </head>
@@ -56,6 +108,7 @@ $conn->close();
                     <!-- <div class="style-i1">
                         <img width="200" src="./assets/admin/img/loader.gif" alt="Loader gif">
                     </div> -->
+
                 </div>
             </div>
         </div>
@@ -105,8 +158,9 @@ $conn->close();
             </div>
         </div>
     </header>
+
     <main id="content" role="main" class="main pointer-event">
-        <section class="section-content pt-5">
+        <section class="section-content ">
             <div class="container-fluid">
                 <div class="d-flex flex-wrap">
                     <div class="order--pos-left">
@@ -114,7 +168,7 @@ $conn->close();
                             <h5 class="p-3 m-0 bg-light">Product Section</h5>
                             <div class="px-3 py-4">
                                 <div class="row gy-1">
-                                    <div class="col-sm-6">
+                                    <!-- <div class="col-sm-6">
                                         <div class="input-group d-flex justify-content-end">
                                             <select name="category" id="category"
                                                 class="form-control js-select2-custom w-100 category-show"
@@ -122,7 +176,7 @@ $conn->close();
                                                 <option value>All categories</option>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-sm-6">
                                         <form class>
 
@@ -173,6 +227,7 @@ $conn->close();
                                 </div>
                             </div>
                             <div>
+
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
@@ -180,7 +235,9 @@ $conn->close();
                                             <th>Category</th>
                                             <th>Name</th>
                                             <th>Item Price</th>
+                                            <th>Wholesale Price</th>
                                             <th>Selling Price</th>
+                                            <th>Warranty</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -189,23 +246,28 @@ $conn->close();
                                             <th>Category</th>
                                             <th>Name</th>
                                             <th>Item Price</th>
+                                            <th>Wholesale Price</th>
                                             <th>Selling Price</th>
+                                            <th>Warranty</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <?php
             foreach ($products as $index => $product) {
                 echo "<tr data-id='" . ($index + 1) . "' data-category='" . htmlspecialchars($product['category']) . "' data-name='" . htmlspecialchars($product['name']) . "' data-price='" . htmlspecialchars($product['price']) . "' data-selling-price='" . htmlspecialchars($product['selling_price']) . "'>";
-                echo "<td>" . ($index + 1) . "</td>";
+                    echo "<td>" . ($index + 1) . "</td>";
                 echo "<td>" . htmlspecialchars($product['category']) . "</td>";
                 echo "<td>" . htmlspecialchars($product['name']) . "</td>";
                 echo "<td>" . htmlspecialchars($product['price']) . "</td>";
+                echo "<td>" . htmlspecialchars($product['wholesale_price']) . "</td>";
                 echo "<td>" . htmlspecialchars($product['selling_price']) . "</td>";
+                echo "<td>" . htmlspecialchars($product['warranty']) . "</td>";
                 echo "</tr>";
             }
         ?>
                                     </tbody>
                                 </table>
+
 
                             </div>
                             <div class="table-responsive mt-4">
@@ -314,6 +376,8 @@ $conn->close();
                                                 <!-- Rows will be added here dynamically -->
                                             </tbody>
                                         </table>
+
+
                                     </div>
                                 </div>
                                 <div class="box p-3">
@@ -349,24 +413,24 @@ $conn->close();
 
 
 
+
                                         <dt class="col-6">Total :</dt>
                                         <dd class="col-6 text-right h4 b">
                                             <span id="total_price">0</span> Rs.
                                         </dd>
                                     </dl>
+                                    <br>
                                     <div class="row g-2">
-                                        <div class="col-6 mt-2">
+                                        <!-- <div class="col-6 mt-2">
                                             <button type="button" class="btn btn-danger btn-block empty-cart">
                                                 <i class="fa fa-times-circle "></i>
                                                 Cancel Order
                                             </button>
-                                        </div>
-                                        <div class="col-6 mt-2">
-                                            <button type="button" class="btn btn-success btn-block submit-order">
-                                                <i class="fa fa-shopping-bag"></i>
-                                                Place Order
-                                            </button>
-                                        </div>
+                                        </div> -->
+                                        <a href="place-order.php" class="btn btn-success btn-block">
+                                            <i class="fa fa-shopping-bag"></i>
+                                            Place Order
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="modal fade" id="add-customer" tabindex="-1">
@@ -443,6 +507,7 @@ $conn->close();
                                 </div>
 
 
+
                                 <div class="modal fade" id="add-coupon-discount" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -492,7 +557,7 @@ $conn->close();
                                 </div>
                             </div>
                         </div> -->
-                                <div class="modal fade" id="paymentModal" tabindex="-1">
+                                <!-- <div class="modal fade" id="paymentModal" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -506,8 +571,8 @@ $conn->close();
                                                     </span>
                                                     0
                                                     $</h4>
-                                            </div>
-                                            <div class="modal-body">
+                                            </div> -->
+                                <!-- <div class="modal-body">
                                                 <form action="https://6pos.6amtech.com/admin/pos/order" id="order_place"
                                                     method="post">
                                                     <input type="hidden" name="_token"
@@ -558,10 +623,10 @@ $conn->close();
                                                             type="submit">Submit</button>
                                                     </div>
                                                 </form>
-                                            </div>
-                                        </div>
+                                            </div> -->
+                                <!-- </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <script data-cfasync="false"
                                     src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
                                 <script>
@@ -891,19 +956,19 @@ $conn->close();
 
     $(document).on('ready', function() {});
 
-    function set_category_filter(id) {
-        var nurl = new URL('https://6pos.6amtech.com/admin/pos');
-        nurl.searchParams.set('category_id', id);
-        location.href = nurl;
-    }
+    // function set_category_filter(id) {
+    //     var nurl = new URL('https://6pos.6amtech.com/admin/pos');
+    //     nurl.searchParams.set('category_id', id);
+    //     location.href = nurl;
+    // }
 
-    $('#search-form').on('submit', function(e) {
-        e.preventDefault();
-        var keyword = $('#datatableSearch').val();
-        var nurl = new URL('https://6pos.6amtech.com/admin/pos');
-        nurl.searchParams.set('keyword', keyword);
-        location.href = nurl;
-    });
+    // $('#search-form').on('submit', function(e) {
+    //     e.preventDefault();
+    //     var keyword = $('#datatableSearch').val();
+    //     var nurl = new URL('https://6pos.6amtech.com/admin/pos');
+    //     nurl.searchParams.set('keyword', keyword);
+    //     location.href = nurl;
+    // });
 
     function quickView(product_id) {
         $.ajax({
@@ -991,36 +1056,36 @@ $conn->close();
         });
     }
 
-    function emptyCart() {
-        Swal.fire({
-            title: 'Are you sure ',
-            text: 'You want to remove all items from cart!!',
-            type: 'warning',
-            showCancelButton: true,
-            cancelButtonColor: 'default',
-            confirmButtonColor: '#161853',
-            cancelButtonText: 'No',
-            confirmButtonText: 'Yes',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.value) {
-                $.post('https://6pos.6amtech.com/admin/pos/empty-cart', {
-                    _token: 'IRlKNC2Ol9Iiy2TZJOEmjPMeOgcxOwOfiv2L6o7e'
-                }, function(data) {
-                    $('#cart').empty().html(data.view);
-                    $('#search').focus();
-                    if (data.user_type === 'sc') {
-                        customer_Balance_Append(data.user_id);
-                    }
-                    toastr.info('Item has been removed from cart', {
-                        CloseButton: true,
-                        ProgressBar: true
-                    });
-                });
-            }
-        })
+    // function emptyCart() {
+    //     Swal.fire({
+    //         title: 'Are you sure ',
+    //         text: 'You want to remove all items from cart!!',
+    //         type: 'warning',
+    //         showCancelButton: true,
+    //         cancelButtonColor: 'default',
+    //         confirmButtonColor: '#161853',
+    //         cancelButtonText: 'No',
+    //         confirmButtonText: 'Yes',
+    //         reverseButtons: true
+    //     }).then((result) => {
+    //         if (result.value) {
+    //             $.post('https://6pos.6amtech.com/admin/pos/empty-cart', {
+    //                 _token: 'IRlKNC2Ol9Iiy2TZJOEmjPMeOgcxOwOfiv2L6o7e'
+    //             }, function(data) {
+    //                 $('#cart').empty().html(data.view);
+    //                 $('#search').focus();
+    //                 if (data.user_type === 'sc') {
+    //                     customer_Balance_Append(data.user_id);
+    //                 }
+    //                 toastr.info('Item has been removed from cart', {
+    //                     CloseButton: true,
+    //                     ProgressBar: true
+    //                 });
+    //             });
+    //         }
+    //     })
 
-    }
+    // }
 
     function updateCart() {
         $.post('https://6pos.6amtech.com/admin/pos/cart-items', {
@@ -1162,13 +1227,28 @@ $conn->close();
     }, 1000));
 
 
+
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            "pageLength": 10, // Number of rows to display per page
+            "lengthChange": false, // Disable the length change dropdown
+            "pagingType": "simple_numbers", // Simplified pagination controls
+            "dom": '<"top"fi>rt<"bottom"lp><"clear">' // Remove the search input
+        });
+    });
+
+
     document.addEventListener('DOMContentLoaded', function() {
         const dataTable = document.getElementById('dataTable');
         const detailTableBody = document.querySelector('#detailTable tbody');
+        const subtotalElement = document.getElementById('subtotal');
         const totalPriceElement = document.getElementById('total_price');
         const extraDiscountElement = document.getElementById('extra_discount');
+        const taxAmountElement = document.getElementById('tax_amount');
+        const discountInputElement = document.getElementById('dis_amount');
         let totalPrice = 0;
         let discountAmount = 0;
+        let taxPercentage = 0;
 
         // Function to calculate subtotal
         function calculateSubtotal() {
@@ -1176,17 +1256,27 @@ $conn->close();
             document.querySelectorAll('#detailTable .selling-price').forEach(function(cell) {
                 subtotal += parseFloat(cell.textContent) || 0;
             });
-            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' Rs.';
+            subtotalElement.textContent = subtotal.toFixed(2) + ' Rs.';
+            return subtotal;
         }
 
         // Function to calculate and update total price
         function calculateTotal() {
-            totalPrice = 0;
-            document.querySelectorAll('#detailTable .selling-price').forEach(function(cell) {
-                totalPrice += parseFloat(cell.textContent) || 0;
-            });
-            const newTotalPrice = totalPrice - discountAmount;
-            totalPriceElement.textContent = newTotalPrice < 0 ? '0.00' : newTotalPrice.toFixed(2);
+            const subtotal = calculateSubtotal();
+            const taxAmount = (subtotal * (taxPercentage / 100)).toFixed(2);
+            totalPrice = subtotal - discountAmount + parseFloat(taxAmount);
+
+            // Display total with a sign to indicate negative amounts
+            totalPriceElement.textContent = totalPrice.toFixed(2);
+
+            // Optionally display a warning if total is negative
+            if (totalPrice < 0) {
+                totalPriceElement.classList.add('text-danger'); // Add a class to show warning in red color
+                totalPriceElement.title = 'Total amount is negative. Discount exceeds subtotal.';
+            } else {
+                totalPriceElement.classList.remove('text-danger'); // Remove warning class if positive
+                totalPriceElement.title = ''; // Clear warning tooltip
+            }
         }
 
         // Function to apply extra discount
@@ -1200,6 +1290,16 @@ $conn->close();
             }
         }
 
+        // Initialize values on page load
+        function initializeValues() {
+            subtotalElement.textContent = '0.00 Rs.';
+            totalPriceElement.textContent = '0.00';
+            extraDiscountElement.nextElementSibling.textContent = '0.00 Rs.';
+            taxAmountElement.textContent = '0 %';
+        }
+
+        initializeValues(); // Call on page load
+
         // Event listener for row clicks on the data table
         dataTable.addEventListener('click', function(event) {
             const row = event.target.closest('tr');
@@ -1212,13 +1312,12 @@ $conn->close();
                 newRow.innerHTML = `
                 <td>${itemName}</td>
                 <td contenteditable="true" class="qty-cell">1</td>
-                <td class="selling-price" data-original-price="${itemSellingPrice.toFixed(2)}">${itemSellingPrice.toFixed(2)}</td>
+                <td contenteditable="true" class="selling-price" data-original-price="${itemSellingPrice.toFixed(2)}">${itemSellingPrice.toFixed(2)}</td>
                 <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
             `;
                 detailTableBody.appendChild(newRow);
 
                 // Recalculate subtotal and total price
-                calculateSubtotal();
                 calculateTotal();
             }
         });
@@ -1227,60 +1326,116 @@ $conn->close();
         detailTableBody.addEventListener('click', function(e) {
             if (e.target.classList.contains('delete-btn')) {
                 e.target.closest('tr').remove();
-                calculateSubtotal();
                 calculateTotal();
             }
         });
 
-        // Event listener for quantity cell input validation and total price update
+        // Event listener for quantity and selling price cell input validation and total price update
         detailTableBody.addEventListener('keydown', function(e) {
-            if (e.target.classList.contains('qty-cell') && e.key === 'Enter') {
-                e.preventDefault(); // Prevent the default behavior of Enter key
-                const qtyCell = e.target;
-                let qty = qtyCell.textContent.trim().replace(/,/g, ''); // Remove commas
+            const cell = e.target;
+            if (cell.classList.contains('qty-cell') && e.key === 'Enter') {
+                e.preventDefault();
+                let qty = cell.textContent.trim().replace(/,/g, '');
                 qty = parseInt(qty, 10);
 
                 if (!isNaN(qty) && qty > 0) {
-                    const sellingPriceCell = qtyCell.nextElementSibling; // The selling price cell
+                    const sellingPriceCell = cell.nextElementSibling;
                     const originalSellingPrice = parseFloat(sellingPriceCell.getAttribute(
-                        'data-original-price')); // Get original price
+                        'data-original-price'));
                     const totalSellingPrice = (originalSellingPrice * qty).toFixed(2);
                     sellingPriceCell.textContent = totalSellingPrice;
-
-                    // Move focus away from qty cell
-                    qtyCell.blur(); // Trigger blur event
-
-                    // Recalculate subtotal and total price
-                    calculateSubtotal();
+                    cell.blur(); // Trigger blur event
                     calculateTotal();
                 } else {
                     alert('Please enter a valid number.');
-                    qtyCell.textContent = '1'; // Reset to default value
+                    cell.textContent = '1'; // Reset to default value
+                }
+            } else if (cell.classList.contains('selling-price') && e.key === 'Enter') {
+                e.preventDefault();
+                let sellingPrice = cell.textContent.trim().replace(/,/g, '');
+                sellingPrice = parseFloat(sellingPrice);
+
+                if (!isNaN(sellingPrice) && sellingPrice >= 0) {
+                    cell.setAttribute('data-original-price', sellingPrice.toFixed(2));
+                    calculateTotal();
+                    cell.blur(); // Trigger blur event
+                } else {
+                    alert('Please enter a valid number.');
+                    cell.textContent = cell.getAttribute(
+                        'data-original-price'); // Reset to original value
                 }
             }
         }, true);
 
-        // Event listener for quantity cell input validation on blur
+        // Event listener for quantity and selling price cell input validation on blur
         detailTableBody.addEventListener('blur', function(e) {
-            if (e.target.classList.contains('qty-cell')) {
-                let qty = e.target.textContent.trim().replace(/,/g, ''); // Remove commas
+            const cell = e.target;
+            if (cell.classList.contains('qty-cell')) {
+                let qty = cell.textContent.trim().replace(/,/g, '');
                 if (!/^\d+$/.test(qty)) {
-                    e.target.textContent = '1'; // Reset to default value
+                    cell.textContent = '1'; // Reset to default value
                     alert('Please enter a valid number.');
+                } else {
+                    const sellingPriceCell = cell.nextElementSibling;
+                    const originalSellingPrice = parseFloat(sellingPriceCell.getAttribute(
+                        'data-original-price'));
+                    const totalSellingPrice = (originalSellingPrice * parseInt(qty, 10)).toFixed(2);
+                    sellingPriceCell.textContent = totalSellingPrice;
                 }
-
-                // Recalculate subtotal and total price
-                calculateSubtotal();
+                calculateTotal();
+            } else if (cell.classList.contains('selling-price')) {
+                let sellingPrice = cell.textContent.trim().replace(/,/g, '');
+                if (!/^\d+(\.\d{1,2})?$/.test(sellingPrice)) {
+                    cell.textContent = cell.getAttribute(
+                        'data-original-price'); // Reset to original value
+                    alert('Please enter a valid number.');
+                } else {
+                    cell.setAttribute('data-original-price', sellingPrice);
+                }
                 calculateTotal();
             }
         }, true);
 
         // Event listener for the modal submit button
         document.querySelector('#add-discount .extra-discount').addEventListener('click', function() {
-            const discountAmount = parseFloat(document.getElementById('dis_amount').value) || 0;
+            const discountAmount = parseFloat(discountInputElement.value) || 0;
             applyDiscount(discountAmount);
-            // Close the modal
             $('#add-discount').modal('hide');
+        });
+
+        // Event listener for tax amount input validation and update on Enter key
+        taxAmountElement.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                let tax = taxAmountElement.textContent.trim().replace(/%/g, '');
+                tax = parseFloat(tax);
+
+                if (!isNaN(tax) && tax >= 0) {
+                    taxPercentage = tax;
+                    taxAmountElement.setAttribute('data-value', tax.toFixed(2));
+                    taxAmountElement.textContent = tax % 1 === 0 ? `${tax} %` : `${tax.toFixed(2)} %`;
+                    taxAmountElement.blur(); // Remove focus to hide cursor
+                    calculateTotal();
+                } else {
+                    alert('Please enter a valid tax percentage.');
+                    taxAmountElement.textContent = '0 %'; // Reset to default value
+                }
+            }
+        });
+
+        // Event listener for discount input to apply discount on Enter key
+        discountInputElement.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent default form submission
+                const discountAmount = parseFloat(discountInputElement.value) || 0;
+                applyDiscount(discountAmount);
+                $('#add-discount').modal('hide');
+            }
+        });
+
+        // Event listener to focus on the discount input when the modal is shown
+        $('#add-discount').on('shown.bs.modal', function() {
+            discountInputElement.focus(); // Focus on the discount input field
         });
     });
     </script>
