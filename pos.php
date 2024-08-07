@@ -236,6 +236,7 @@ $conn->close();
                 echo "<td>" . htmlspecialchars($product['warranty']) . "</td>";
                 echo "</tr>";
             }
+            
         ?>
                                     </tbody>
                                 </table>
@@ -355,6 +356,7 @@ $conn->close();
                                         <table class="table table-align-middle mb-0" id="detailTable">
                                             <thead class="text-muted">
                                                 <tr>
+                                                    <th>ID</th>
                                                     <th>Item</th>
                                                     <th>Qty</th>
                                                     <th>Selling Price</th>
@@ -362,11 +364,28 @@ $conn->close();
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <!-- Rows will be added here dynamically -->
+
                                             </tbody>
                                         </table>
 
+                                        <script>
+                                        function addItemToDetailTable(itemId, qty, sellingPrice) {
+                                            console.log('Adding item with ID:', itemId); // Log itemId for debugging
+                                            const detailTableBody = document.querySelector('#detailTable tbody');
+                                            const row = document.createElement('tr');
+                                            row.setAttribute('data-id', itemId); // Add itemId as data-id
 
+                                            row.innerHTML = `
+        <td>${itemId}</td>
+        <td>Item Name</td> <!-- Replace with actual item name if available -->
+        <td>${qty}</td>
+        <td>${sellingPrice}</td>
+        <td><button type="button" class="btn btn-danger btn-sm">Delete</button></td>
+    `;
+
+                                            detailTableBody.appendChild(row);
+                                        }
+                                        </script>
                                     </div>
                                 </div>
                                 <div class="box p-3">
@@ -394,19 +413,41 @@ $conn->close();
                                             </button> 0 Rs.
                                         </dd> -->
 
-                                        <dt class="col-6">Tax :</dt>
+                                        <!-- <dt class="col-6">Tax :</dt>
                                         <dd class="col-6 text-right">
                                             <span id="tax_amount" contenteditable="true" class="editable"
                                                 data-value="0">0 %</span>
-                                        </dd>
-
-
-
+                                        </dd> -->
 
                                         <dt class="col-6">Total :</dt>
                                         <dd class="col-6 text-right h4 b">
                                             <span id="total_price">0</span> Rs.
                                         </dd>
+
+
+                                        <dt class="col-6">Paid Amount :</dt>
+                                        <dd class="col-6 text-right">
+                                            <span id="paid_amount" contenteditable="true" class="editable"
+                                                data-value="0">0 Rs.</span>
+                                        </dd>
+                                        <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const paidAmount = document.getElementById('paid_amount');
+
+                                            paidAmount.addEventListener('keydown', function(event) {
+                                                if (event.key === 'Enter') {
+                                                    event
+                                                        .preventDefault(); // Prevent the default Enter key behavior
+                                                    this.blur(); // Remove focus from the element
+                                                }
+                                            });
+
+                                            paidAmount.addEventListener('click', function() {
+                                                // Focus on the element when it's clicked
+                                                this.focus();
+                                            });
+                                        });
+                                        </script>
                                     </dl>
                                     <br>
                                     <div class="row g-2">
@@ -416,12 +457,14 @@ $conn->close();
                                                 Cancel Order
                                             </button>
                                         </div> -->
-                                        <a href="place-order.php" class="btn btn-success btn-block">
+                                        <a href="save_sale.php" class="btn btn-success btn-block">
                                             <i class="fa fa-shopping-bag"></i>
                                             Place Order
                                         </a>
                                     </div>
                                 </div>
+
+
                                 <div class="modal fade" id="add-customer" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -1222,11 +1265,11 @@ $conn->close();
         const subtotalElement = document.getElementById('subtotal');
         const totalPriceElement = document.getElementById('total_price');
         const extraDiscountElement = document.getElementById('extra_discount');
-        const taxAmountElement = document.getElementById('tax_amount');
         const discountInputElement = document.getElementById('dis_amount');
+        const paidAmountElement = document.getElementById('paid_amount'); // Reference to the Paid Amount field
         let totalPrice = 0;
         let discountAmount = 0;
-        let taxPercentage = 0;
+        let itemIdCounter = 1; // Counter for item IDs
 
         // Function to calculate subtotal
         function calculateSubtotal() {
@@ -1244,20 +1287,8 @@ $conn->close();
         // Function to calculate and update total price
         function calculateTotal() {
             const subtotal = calculateSubtotal();
-            const taxAmount = (subtotal * (taxPercentage / 100)).toFixed(2);
-            totalPrice = subtotal - discountAmount + parseFloat(taxAmount);
-
-            // Display total with a sign to indicate negative amounts
+            totalPrice = subtotal - discountAmount;
             totalPriceElement.textContent = totalPrice.toFixed(2);
-
-            // Optionally display a warning if total is negative
-            if (totalPrice < 0) {
-                totalPriceElement.classList.add('text-danger'); // Add a class to show warning in red color
-                totalPriceElement.title = 'Total amount is negative. Discount exceeds subtotal.';
-            } else {
-                totalPriceElement.classList.remove('text-danger'); // Remove warning class if positive
-                totalPriceElement.title = ''; // Clear warning tooltip
-            }
         }
 
         // Function to apply extra discount
@@ -1271,35 +1302,50 @@ $conn->close();
             }
         }
 
-        // Initialize values on page load
-        function initializeValues() {
-            subtotalElement.textContent = '0.00 Rs.';
-            totalPriceElement.textContent = '0.00';
-            extraDiscountElement.nextElementSibling.textContent = '0.00 Rs.';
-            taxAmountElement.textContent = '0 %';
+        // Function to clear tables and reset variables
+        function clearTables() {
+            detailTableBody.innerHTML = ''; // Clear rows in detail table
+            subtotalElement.textContent = '0.00 Rs.'; // Reset subtotal
+            totalPriceElement.textContent = '0.00'; // Reset total price
+            discountAmount = 0; // Reset discount amount
+            extraDiscountElement.nextElementSibling.textContent = '0.00 Rs.'; // Reset extra discount display
+            itemIdCounter = 1; // Reset item ID counter
+            paidAmountElement.textContent = '0.00'; // Reset paid amount
+            paidAmountElement.value = ''; // Ensure paid amount input field is also cleared
         }
-
-        initializeValues(); // Call on page load
 
         // Event listener for row clicks on the data table
         dataTable.addEventListener('click', function(event) {
             const row = event.target.closest('tr');
             if (row && row.dataset.id) {
-                const itemName = row.dataset.name;
-                const itemSellingPrice = parseFloat(row.dataset.sellingPrice); // Original selling price
+                const id = row.getAttribute('data-id');
+                const name = row.getAttribute('data-name');
+                const sellingPrice = parseFloat(row.getAttribute('data-selling-price'));
 
-                // Add new item details
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                <td>${itemName}</td>
-                <td contenteditable="true" class="qty-cell">1</td>
-                <td contenteditable="true" class="selling-price" data-original-price="${itemSellingPrice.toFixed(2)}">${itemSellingPrice.toFixed(2)}</td>
-                <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
-            `;
-                detailTableBody.appendChild(newRow);
+                // Check if item already exists in detail table
+                const existingRow = Array.from(detailTableBody.querySelectorAll('tr'))
+                    .find(row => row.getAttribute('data-id') === id);
 
-                // Recalculate subtotal and total price
-                calculateTotal();
+                if (existingRow) {
+                    // If item already exists, just update quantity
+                    const qtyCell = existingRow.querySelector('.qty-cell');
+                    const currentQty = parseInt(qtyCell.textContent, 10);
+                    currentQty = 0;
+                    qtyCell.textContent = currentQty + 1;
+                } else {
+                    // If item does not exist, add new row to detail table with qty set to 1
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-id', id);
+                    newRow.innerHTML = `
+            <td>${itemIdCounter++}</td>
+            <td>${name}</td>
+            <td contenteditable="true" class="qty-cell">1</td>
+            <td contenteditable="true" class="selling-price" data-original-price="${sellingPrice.toFixed(2)}">${sellingPrice.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
+        `;
+                    detailTableBody.appendChild(newRow);
+                }
+                calculateTotal(); // Update total price after adding or updating an item
             }
         });
 
@@ -1373,27 +1419,7 @@ $conn->close();
             $('#add-discount').modal('hide');
         });
 
-        // Event listener for tax amount input validation and update on Enter key
-        taxAmountElement.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                let tax = taxAmountElement.textContent.trim().replace(/%/g, '');
-                tax = parseFloat(tax);
-
-                if (!isNaN(tax) && tax >= 0) {
-                    taxPercentage = tax;
-                    taxAmountElement.setAttribute('data-value', tax.toFixed(2));
-                    taxAmountElement.textContent = tax % 1 === 0 ? `${tax} %` : `${tax.toFixed(2)} %`;
-                    taxAmountElement.blur(); // Remove focus to hide cursor
-                    calculateTotal();
-                } else {
-                    alert('Please enter a valid tax percentage.');
-                    taxAmountElement.textContent = '0 %'; // Reset to default value
-                }
-            }
-        });
-
-        // Event listener for discount input to apply discount on Enter key
+        // Event listener for Enter key in the discount input field
         discountInputElement.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault(); // Prevent default form submission
@@ -1407,8 +1433,121 @@ $conn->close();
         $('#add-discount').on('shown.bs.modal', function() {
             discountInputElement.focus(); // Focus on the discount input field
         });
+
+        // Add click event listeners to rows in the main table
+        document.querySelectorAll('#dataTable tbody tr').forEach(row => {
+            row.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const sellingPrice = parseFloat(this.getAttribute('data-selling-price'));
+
+                // Check if item already exists in detail table
+                const existingRow = Array.from(detailTableBody.querySelectorAll('tr'))
+                    .find(row => row.getAttribute('data-id') === id);
+
+                if (existingRow) {
+                    // If item already exists, just update quantity
+                    const qtyCell = existingRow.querySelector('.qty-cell');
+                    const currentQty = parseInt(qtyCell.textContent, 10) || 0;
+                    qtyCell.textContent = currentQty + 1;
+                } else {
+                    // If item does not exist, add new row to detail table with qty set to 1
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-id', id);
+                    newRow.innerHTML = `
+            <td>${itemIdCounter++}</td>
+            <td>${name}</td>
+            <td contenteditable="true" class="qty-cell">1</td>
+            <td contenteditable="true" class="selling-price" data-original-price="${sellingPrice.toFixed(2)}">${sellingPrice.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
+        `;
+                    detailTableBody.appendChild(newRow);
+                }
+                calculateTotal(); // Update total price after adding or updating an item
+            });
+        });
+
+        // Event listener for the save button
+        document.querySelector('a[href="save_sale.php"]').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            const rows = document.querySelectorAll('#detailTable tbody tr');
+            const numberOfItem = rows.length;
+            const totalQty = Array.from(rows).reduce((acc, row) => acc +
+                parseInt(row.querySelector('.qty-cell').textContent || 0), 0);
+            const total = parseFloat(totalPriceElement.textContent) || 0;
+            const totalDiscount = parseFloat(document.getElementById('discount_amount').textContent) ||
+                0;
+            const paidAmount = parseFloat(paidAmountElement.textContent) || 0;
+
+            // Check if paid amount is zero
+            if (paidAmount <= 0) {
+                alert('Please enter a valid paid amount.');
+                return; // Prevent further execution
+            }
+
+            let customerProfit = 0;
+
+            if (numberOfItem === 0) {
+                console.warn('No items found in the detail table.');
+            } else {
+                rows.forEach(row => {
+                    const itemId = row.getAttribute('data-id');
+                    if (itemId) {
+                        const sellingPrice = parseFloat(row.querySelector('.selling-price')
+                            .textContent) || 0;
+                        const qty = parseInt(row.querySelector('.qty-cell').textContent) || 0;
+
+                        const itemRow = Array.from(document.querySelectorAll(
+                                '#dataTable tbody tr'))
+                            .find(tr => tr.getAttribute('data-id') === itemId);
+                        const itemPrice = itemRow ? parseFloat(itemRow.getAttribute(
+                            'data-price')) : null;
+
+                        if (itemPrice !== null) {
+                            const itemProfit = ((itemPrice - sellingPrice) + totalDiscount) *
+                                qty;
+                            customerProfit += itemProfit;
+                        } else {
+                            console.error(`Item with ID ${itemId} not found in dataTable.`);
+                        }
+                    } else {
+                        console.error('Item ID is null or undefined');
+                    }
+                });
+            }
+
+            const subTotal = parseFloat(subtotalElement.textContent) || 0;
+            const balance = paidAmount - total;
+
+            fetch('save_sale.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        numberOfItem: numberOfItem,
+                        totalQty: totalQty,
+                        total: total,
+                        totalDiscount: totalDiscount,
+                        customerProfit: customerProfit,
+                        subTotal: subTotal,
+                        paidAmount: paidAmount,
+                        balance: balance
+                    })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    if (data.includes('Sale saved successfully!')) {
+                        clearTables(); // Clear tables and reset variables
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
     });
     </script>
+
 </body>
 
 </html>
