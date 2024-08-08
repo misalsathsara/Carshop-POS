@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Aug 06, 2024 at 06:37 PM
+-- Generation Time: Aug 08, 2024 at 06:18 AM
 -- Server version: 5.7.24
 -- PHP Version: 8.0.1
 
@@ -39,6 +39,22 @@ CREATE TABLE `admin` (
 
 INSERT INTO `admin` (`id`, `Name`, `password`) VALUES
 (1, 'admin', '123');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart`
+--
+
+CREATE TABLE `cart` (
+  `id` int(11) NOT NULL,
+  `saleid` varchar(255) NOT NULL,
+  `productName` varchar(255) NOT NULL,
+  `qty` int(11) NOT NULL,
+  `item_price` decimal(10,2) NOT NULL,
+  `selling_price` decimal(10,2) NOT NULL,
+  `total_price` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -152,7 +168,7 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`id`, `category`, `name`, `cost_price`, `wholesale_price`, `price`, `selling_price`, `stock`, `warranty`, `created_at`) VALUES
 (1, 'Speakers', 'Speaker', '500.00', '258.00', '460.00', '450.00', 20, '1 year', '2024-08-04 16:57:02'),
-(3, 'Subwoofer', 'Subwoofer Model A', '50.00', '0.00', '75.00', '100.00', 30, '', '2024-08-05 06:36:41'),
+(3, 'Subwoofer', 'Subwoofer Model A', '50.00', '0.00', '120.00', '100.00', 30, '1 year', '2024-08-05 06:36:41'),
 (4, 'Subwoofer', 'Subwoofer Model B', '55.00', '0.00', '80.00', '105.00', 25, '', '2024-08-05 06:36:41'),
 (5, 'Subwoofer', 'Subwoofer Model C', '60.00', '0.00', '85.00', '110.00', 20, '', '2024-08-05 06:36:41'),
 (6, 'Subwoofer', 'Subwoofer Model D', '65.00', '0.00', '90.00', '115.00', 15, '', '2024-08-05 06:36:41'),
@@ -177,6 +193,44 @@ INSERT INTO `products` (`id`, `category`, `name`, `cost_price`, `wholesale_price
 (25, 'Speakers', 'Kiwi', '5000.00', '5200.00', '6800.00', '6500.00', 15, '6 months', '2024-08-06 17:55:29'),
 (26, 'Speakers', 'sadasd', '1551.00', '5445.00', '5454.00', '5445.00', 4545, '6 months', '2024-08-06 18:11:14');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sales`
+--
+
+CREATE TABLE `sales` (
+  `id` int(11) NOT NULL,
+  `saleid` varchar(255) NOT NULL,
+  `numberOfItem` int(11) NOT NULL,
+  `total_Qty` int(11) NOT NULL,
+  `Total` decimal(10,2) NOT NULL,
+  `Total_Discount` decimal(10,2) NOT NULL,
+  `Customer_Profit` decimal(10,2) NOT NULL,
+  `subTotal` decimal(10,2) NOT NULL,
+  `paid_amount` decimal(10,2) NOT NULL,
+  `balance` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `sales`
+--
+
+INSERT INTO `sales` (`id`, `saleid`, `numberOfItem`, `total_Qty`, `Total`, `Total_Discount`, `Customer_Profit`, `subTotal`, `paid_amount`, `balance`) VALUES
+(20, 'SALE1723050835', 1, 2, '190.00', '0.00', '40.00', '200.00', '200.00', '10.00'),
+(21, 'SALE1723050870', 1, 1, '90.00', '0.00', '20.00', '100.00', '90.00', '0.00'),
+(22, 'SALE1723051114', 1, 1, '90.00', '0.00', '20.00', '100.00', '90.00', '0.00'),
+(23, 'SALE1723051287', 1, 1, '90.00', '10.00', '30.00', '100.00', '90.00', '0.00'),
+(24, 'SALE1723053514', 1, 1, '90.00', '10.00', '30.00', '100.00', '120.00', '30.00'),
+(25, 'SALE1723053685', 1, 2, '900.00', '0.00', '20.00', '900.00', '0.00', '-900.00'),
+(26, 'SALE1723053736', 1, 2, '180.00', '20.00', '80.00', '200.00', '250.00', '70.00'),
+(27, 'SALE1723053740', 0, 0, '0.00', '0.00', '0.00', '0.00', '250.00', '250.00'),
+(28, 'SALE1723053774', 1, 1, '80.00', '20.00', '40.00', '100.00', '200.00', '120.00'),
+(29, 'SALE1723053875', 1, 2, '210.00', '0.00', '-50.00', '210.00', '0.00', '-210.00'),
+(36, 'SALE1723055491', 1, 1, '80.00', '20.00', '40.00', '100.00', '100.00', '20.00'),
+(37, 'SALE1723097508', 1, 1, '88.00', '12.00', '32.00', '100.00', '120.00', '32.00'),
+(38, 'SALE1723097582', 1, 1, '88.00', '12.00', '32.00', '100.00', '100.00', '12.00');
+
 --
 -- Indexes for dumped tables
 --
@@ -185,6 +239,12 @@ INSERT INTO `products` (`id`, `category`, `name`, `cost_price`, `wholesale_price
 -- Indexes for table `admin`
 --
 ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -218,6 +278,12 @@ ALTER TABLE `products`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `sales`
+--
+ALTER TABLE `sales`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -226,6 +292,12 @@ ALTER TABLE `products`
 --
 ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `category`
@@ -256,6 +328,12 @@ ALTER TABLE `employee`
 --
 ALTER TABLE `products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+
+--
+-- AUTO_INCREMENT for table `sales`
+--
+ALTER TABLE `sales`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
