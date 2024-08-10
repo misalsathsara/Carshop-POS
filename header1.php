@@ -26,6 +26,12 @@
             <a href="pos.php" class="btn btn-primary" target="_blank">
                 POS
             </a>
+            <a href="pos-wholesale.php" class="btn btn-primary" target="_blank">
+                WHOLESALE
+            </a>
+            <a href="pos-customer.php" class="btn btn-primary" target="_blank">
+                CUSTOMER
+            </a>
         </form>
 
 

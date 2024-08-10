@@ -1,11 +1,12 @@
 <?php
 // Enable error reporting
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
-// Include database connection file
-require 'db.php'; // Adjust the path as necessary
+
+require 'db.php'; 
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Retrieve data from POST request
@@ -17,9 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $subTotal = $_POST['subTotal'] ?? 0;
     $paidAmount = $_POST['paidAmount'] ?? 0;
     $balance = $_POST['balance'] ?? 0;
-    $items = $_POST['items'] ?? '[]'; // Assuming JSON data for items
+    $items = $_POST['items'] ?? '[]'; 
 
-    // Generate sale ID (for simplicity, using a timestamp here, but you can adjust it as needed)
+    // Output POST data for debugging
+    // echo "<pre>";
+    // echo "POST Data:\n";
+    // print_r($_POST);
+    // echo "Items Data:\n";
+    // print_r(json_decode($items, true)); 
+    // echo "</pre>";
+
+    // Generate sale ID
     $saleid = 'SALE' . time();
 
     // Begin transaction
@@ -44,25 +53,84 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Error preparing sales statement: ' . $conn->error);
         }
 
+        if (!empty($_SESSION['details'])) {
+            // Extract details from the session array
+            $details = $_SESSION['details'];
+            
+            // Prepare SQL statement
+            $sql = "INSERT INTO gps (saleid, app_name, server, username, password, sim_no) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+                    
+            if ($stmt = $conn->prepare($sql)) {
+                // Bind parameters from session details
+                $stmt->bind_param(
+                    'ssssss',
+                    $saleid,
+                    $details['app_name'],
+                    $details['server'],
+                    $details['username'],
+                    $details['password'],
+                    $details['sim_no']
+                );
+        
+                // Execute the statement
+                if (!$stmt->execute()) {
+                    throw new Exception('Error executing statement: ' . $stmt->error);
+                }
+                $stmt->close();
+            } else {
+                throw new Exception('Error preparing statement: ' . $conn->error);
+            }
+        
+            // Clear session data
+            unset($_SESSION['details']);
+        }
+
         // Decode item data
         $items = json_decode($items, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Error decoding JSON data: ' . json_last_error_msg());
         }
 
+
         foreach ($items as $item) {
+            $item_price = 0;
+
             $productName = $item['productName'];
             $qty = $item['qty'];
-            $item_price = $item['item_price'];
-            $selling_price = $item['selling_price'];
-            $total_price = $item['total_price'];
+            $selling_price = $item['sellPrice'];
+            $total_price = $item['totalPrice'];
 
+            // Fetch item price from database
+            $sql = "SELECT price, stock, cost_price FROM products WHERE name = ?";
+            if ($stmt = $conn->prepare($sql)) {
+                // Bind parameter
+                $stmt->bind_param('s', $productName);
+
+                // Execute the statement
+                $stmt->execute();
+
+                // Bind result
+                $stmt->bind_result($price, $stock, $cost_price);
+                if ($stmt->fetch()) {
+                    $item_price = $price;
+                    $item_stock = $stock;
+                    $cost_price = $cost_price;
+                } else {
+                    throw new Exception('Product not found: ' . $productName);
+                }
+                $stmt->close();
+            } else {
+                throw new Exception('Error preparing product price statement: ' . $conn->error);
+            }
+
+            // Insert data into cart table
             $sql = "INSERT INTO cart (saleid, productName, qty, item_price, selling_price, total_price) 
                     VALUES (?, ?, ?, ?, ?, ?)";
 
             if ($stmt = $conn->prepare($sql)) {
                 // Bind parameters
-                $stmt->bind_param('ssdddd', $saleid, $productName, $qty, $item_price, $selling_price, $total_price);
+                $stmt->bind_param('ssiddd', $saleid, $productName, $qty, $item_price, $selling_price, $total_price);
 
                 // Execute the statement
                 if (!$stmt->execute()) {
@@ -72,8 +140,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 throw new Exception('Error preparing cart statement: ' . $conn->error);
             }
-        }
 
+            // Update product stock
+            $new_stock = $item_stock - $qty;
+            $sql = "UPDATE products SET stock = ? WHERE name = ?";
+            if ($stmt = $conn->prepare($sql)) {
+                // Bind parameters
+                $stmt->bind_param('is', $new_stock, $productName);
+
+                // Execute the statement
+                if (!$stmt->execute()) {
+                    throw new Exception('Error updating product stock: ' . $stmt->error);
+                }
+                $stmt->close();
+            } else {
+                throw new Exception('Error preparing product stock update statement: ' . $conn->error);
+            }
+
+            // Calculate profit
+            $profit = (($selling_price - $cost_price) * $qty);
+           
+        }
+                $total_profit = $profit - $totalDiscount;
+
+            // Insert profit data into profit table
+            $sql = "INSERT INTO profit (saleid, profit) VALUES (?, ?)";
+            if ($stmt = $conn->prepare($sql)) {
+                // Bind parameters
+                $stmt->bind_param('sd', $saleid, $total_profit);
+
+                // Execute the statement
+                if (!$stmt->execute()) {
+                    throw new Exception('Error executing profit statement: ' . $stmt->error);
+                }
+                $stmt->close();
+            } else {
+                throw new Exception('Error preparing profit statement: ' . $conn->error);
+            }
         // Commit transaction
         $conn->commit();
         echo 'Sale saved successfully!';
