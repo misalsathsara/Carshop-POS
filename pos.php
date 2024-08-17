@@ -128,21 +128,7 @@ $conn->close();
             </div>
         </div>
     </div>
-    <header id="header"
-        class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
-        <div class="navbar-nav-wrap">
-            <div class="navbar-nav-wrap-content-right">
-                <ul class="navbar-nav align-items-center flex-row">
-                    <!-- Logout Button -->
-                    <li class="nav-item">
-                        <a class="btn btn-danger rounded" href="logout.php">
-                            <i class="fa fa-power-off"></i> Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </header>
+  
 
     <!-- Modal for Add GPS -->
     <div class="modal fade" id="addGpsModal" tabindex="-1" role="dialog" aria-labelledby="addGpsModalLabel"
@@ -162,7 +148,7 @@ $conn->close();
                             <input type="text" class="form-control" id="appName" name="app_name" value="">
                         </div>
                         <div class="form-group">
-                            <label for="server">Server</label>
+                            <label for="server">Vehicle Number</label>
                             <input type="text" class="form-control" id="server" name="server" value="">
                         </div>
                         <div class="form-group">
@@ -209,8 +195,8 @@ $conn->close();
     <main id="content" role="main" class="main pointer-event">
         <section class="section-content ">
             <div class="container-fluid">
-                <div class="d-flex flex-wrap">
-                    <div class="order--pos-left">
+                <div class="d-flex flex-wrap" >
+                    <div class="order--pos-left" style="width:45%">
                         <div class="card">
                             <h5 class="p-3 m-0 bg-light">Product Section</h5>
                             <div class="px-3 py-4">
@@ -244,7 +230,7 @@ $conn->close();
                                 </div>
                             </div>
                             <div>
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" width=100% id="dataTable" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -252,7 +238,6 @@ $conn->close();
                                             <th>Name</th>
                                             <th>Stock</th>
                                             <th>Item Price</th>
-                                            <th>Wholesale Price</th>
                                             <th>Selling Price</th>
                                             <th>Warranty</th>
                                             <th>Action</th>
@@ -265,7 +250,6 @@ $conn->close();
                                             <th>Name</th>
                                             <th>Stock</th>
                                             <th>Item Price</th>
-                                            <th>Wholesale Price</th>
                                             <th>Selling Price</th>
                                             <th>Warranty</th>
                                             <th></th>
@@ -273,18 +257,22 @@ $conn->close();
                                     </tfoot>
                                     <tbody>
                                         <?php foreach ($products as $index => $product) : ?>
-                                        <tr data-id="<?php echo $index + 1; ?>"
+                                        <tr data-id="<?php echo htmlspecialchars($product['id']); ?>"
                                             data-category="<?php echo htmlspecialchars($product['category']); ?>"
                                             data-name="<?php echo htmlspecialchars($product['name']); ?>"
                                             data-stock="<?php echo htmlspecialchars($product['stock']); ?>"
+                                            data-warranty="<?php echo htmlspecialchars($product['warranty']); ?>"
                                             data-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                            data-item-price="<?php echo htmlspecialchars($product['price']); ?>"
                                             data-selling-price="<?php echo htmlspecialchars($product['selling_price']); ?>">
-                                            <td><?php echo $index + 1; ?></td>
+                                            
+                                            <td><?php echo htmlspecialchars($product['id']); ?></td>
                                             <td><?php echo htmlspecialchars($product['category']); ?></td>
                                             <td><?php echo htmlspecialchars($product['name']); ?></td>
                                             <td><?php echo htmlspecialchars($product['stock']); ?></td>
                                             <td><?php echo htmlspecialchars($product['price']); ?></td>
-                                            <td><?php echo htmlspecialchars($product['wholesale_price']); ?></td>
+                                            <!-- <td><?php echo htmlspecialchars($product['wholesale_price']); ?></td> -->
+
                                             <td><?php echo htmlspecialchars($product['selling_price']); ?></td>
                                             <td><?php echo htmlspecialchars($product['warranty']); ?></td>
                                             <td><button class="btn btn-primary add-to-cart-btn"
@@ -318,8 +306,8 @@ $conn->close();
                             </div>
                         </div>
                     </div>
-                    <div class="order--pos-right">
-                        <div class="card billing-section-wrap">
+                    <div class="order--pos-right" style="margin-right:23%;">
+                        <div class="card billing-section-wrap" style="width:180%;">
                             <h5 class="p-3 m-0 bg-light">Billing Section</h5>
                             <div>
                                 <div class="card-body pb-0">
@@ -340,6 +328,184 @@ $conn->close();
                                                 data-toggle="modal" data-target="#addGpsModal">
                                                 Add GPS
                                             </a>
+                                        </div>
+                                        <div>
+                                            <a class="w-i6 d-inline-block btn btn-danger rounded" href="customeradd.php">
+                                                Customer Add
+                                            </a>
+                                        </div>
+
+                                        <style>
+                                        .user-detail {
+                                            width: 100%;
+                                            padding: 15px;
+                                            font-family: 'Arial', sans-serif;
+                                        }
+
+                                        .form-row {
+                                            display: flex;
+                                            align-items: center;
+                                            gap: 20px;
+                                        }
+
+                                        .form-group {
+                                            flex: 1;
+                                            display: flex;
+                                            flex-direction: column;
+                                            position: relative;
+                                            min-width: 140px;
+                                            /* Ensure a minimum width for consistency */
+                                        }
+
+                                        .form-group label {
+                                            font-size: 14px;
+                                            font-weight: 600;
+                                            color: #333;
+                                            margin-bottom: 5px;
+                                        }
+
+                                        .form-group input,
+                                        .form-group select {
+                                            padding: 10px;
+                                            border-radius: 4px;
+                                            border: 1px solid #ccc;
+                                            font-size: 14px;
+                                            color: #333;
+                                            transition: border-color 0.3s ease;
+                                        }
+
+                                        .form-group input:focus,
+                                        .form-group select:focus {
+                                            border-color: #007bff;
+                                            outline: none;
+                                        }
+
+                                        .checkbox-group {
+                                            flex-direction: row;
+                                            align-items: center;
+                                            gap: 5px;
+                                            margin-top: 23px;
+                                            /* Align with other input fields */
+                                        }
+
+                                        .checkbox-group input[type="checkbox"] {
+                                            transform: scale(1.2);
+                                        }
+
+                                        .checkbox-group label {
+                                            font-size: 14px;
+                                            font-weight: 600;
+                                            color: #333;
+                                            margin-bottom: 0;
+                                        }
+
+                                        @media (max-width: 1024px) {
+                                            .form-row {
+                                                flex-direction: column;
+                                                align-items: flex-start;
+                                            }
+
+                                            .form-group {
+                                                width: 100%;
+                                            }
+
+                                            .form-group input,
+                                            .form-group select {
+                                                width: 100%;
+                                            }
+                                        }
+                                        </style>
+                                        <div class="user-detail">
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label for="username2">User Name:</label>
+                                                    <input type="text" id="username2" name="username" required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="contactNumber2">Contact:</label>
+                                                    <input type="text" id="contactNumber2" name="contactNumber"
+                                                        required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="vehicleNumber2">Vehicle Number:</label>
+                                                    <input type="text" id="vehicleNumber2" name="vehicleNumber"
+                                                        required />
+                                                </div>
+                                                <div class="form-group" id="cusDrop">
+                                                    <label for="customer-select">Customer:</label>
+                                                    <select name="customer" id="customer-select">
+                                                    <option disabled selected><sub>Please select a Customer</sub></option>
+                                                        <?php
+                  include 'db.php';
+                  $query = "SELECT id, Name FROM customer";
+                  $result = mysqli_query($conn, $query);
+  
+                  if ($result && mysqli_num_rows($result) > 0) {
+                      while ($row = mysqli_fetch_assoc($result)) {
+                          echo '<option value="' . htmlspecialchars($row['id']) . '">' . htmlspecialchars($row['Name']) . '</option>';
+                      }
+                  } else {
+                      echo '<option value="">No customers found</option>';
+                  }
+                ?>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group checkbox-group">
+                                                    <input type="checkbox" id="pending-checkbox">
+                                                    <label for="pending-checkbox">Pending</label>
+                                                </div>
+                                            </div>
+   
+
+    <script>
+        document.getElementById('pending-checkbox').addEventListener('change', function() {
+            var checkbox = this;
+            if (checkbox.checked) {
+                var customer = document.querySelector('select[name="customer"]').value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'set_pending_session.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log('Session status:', xhr.responseText);
+                    }
+                };
+                xhr.send('pending=active&customer=' + encodeURIComponent(customer));
+            } else {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'set_pending_session.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log('Session status:', xhr.responseText);
+                    }
+                };
+                xhr.send('pending=unset');
+            }
+        });
+
+        document.getElementById('customer-select').addEventListener('change', function() {
+            var checkbox = document.getElementById('pending-checkbox');
+            if (checkbox.checked) {
+                var customerId = this.value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'get_customer_details.php?id=' + customerId, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText);
+                        document.getElementById('username2').value = data.username;
+                        document.getElementById('contactNumber2').value = data.contact;
+                        document.getElementById('vehicleNumber2').value = data.vehicle_number;
+                    }
+                };
+                xhr.send();
+            }
+        });
+    </script>
+
+
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -363,8 +529,9 @@ $conn->close();
                                                     <th>Item</th>
                                                     <th>Qty</th>
                                                     <th>Selling Price</th>
-                                                    <th style="display: none;">Old Selling Price</th>
+                                                    <th style="display: non;">Item Price</th>
                                                     <th style="display: none;">Customer Profit</th>
+                                                    <th>Warranty</th>
                                                     <th>Delete</th>
                                                 </tr>
                                             </thead>
@@ -423,7 +590,23 @@ $conn->close();
                                             Place Order
                                         </a>
                                     </div>
+                                    <br>
+                                    <div class="row g-2">
+                                        <iframe id="billFrame" src="bill.php" style="display:none;"></iframe>
+
+                                        <!-- Button to trigger the print function -->
+                                        <button onclick="printBill()" class="btn btn-secondary btn-block">Print Bill</button>
+                                    </div>
                                 </div>
+
+                                    <script>
+        function printBill() {
+            var iframe = document.getElementById('billFrame').contentWindow;
+            iframe.focus();
+            iframe.print();
+        }
+    </script>
+   
 
                                 <div class="modal fade" id="add-discount" tabindex="-1" data-dismiss="modal">
                                     <div class="modal-dialog">
@@ -507,53 +690,55 @@ $conn->close();
 
         .input-section input {
             width: 80%;
-            /* Full width within the container */
             padding: 5px 10px;
-            /* Add padding inside the input field */
             border: 1px solid #ccc;
-            /* Light border color */
             border-radius: 8px;
-            /* Rounded corners */
             font-size: 16px;
-            /* Increase font size for readability */
             font-weight: bold;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            /* Subtle shadow for depth */
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            /* Smooth transitions */
         }
 
         .input-section input:focus {
             border-color: #007bff;
-            /* Change border color on focus */
             box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
-            /* Enhanced shadow on focus */
             outline: none;
-            /* Remove default outline */
         }
 
         .input-section input::placeholder {
             color: #888;
-            /* Lighter color for placeholder text */
             opacity: 1;
-            /* Ensure placeholder is fully opaque */
         }
 
-        /* Optional: Additional styling for disabled state */
+
         .input-section input:disabled {
             background-color: #f0f0f0;
-            /* Light background for disabled state */
             border-color: #ddd;
-            /* Light border color for disabled state */
             cursor: not-allowed;
-            /* Change cursor to indicate disabled state */
         }
+
+        .warranty-select {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-size: 14px;
+}
+
+.warranty-select:focus {
+    outline: none;
+    border-color: #007bff;
+    background-color: #fff;
+}
+
         </style>
         <div class="modal fade" id="quick-view" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content" id="quick-view-modal">
                 </div>
             </div>
+            
         </div>
     </main>
     <script src="./assets/admin/js/vendor.min.js"></script>
@@ -586,61 +771,7 @@ $conn->close();
     });
 
 
-    jQuery(".search-bar-input").on('keyup', function() {
-        $(".search-card").removeClass('d-none').show();
-        let name = $(".search-bar-input").val();
-        if (name.length > 0) {
-            $('#search-box').removeClass('d-none').show();
-            $.get({
-                url: 'https://6pos.6amtech.com/admin/pos/search-products',
-                dataType: 'json',
-                data: {
-                    name: name
-                },
-                beforeSend: function() {
-                    $('#loading').removeClass('d-none');
-                },
-                success: function(data) {
-                    if (data.count == 0) {
-                        $('#search-box').addClass('d-none');
-                    }
-                    $('.search-result-box').empty().html(data.result);
-                },
-                complete: function() {
-                    $('#loading').addClass('d-none');
-                },
-            });
-        } else {
-            $('.search-result-box').empty();
-            $('#search-box').addClass('d-none');
-        }
-    });
-
-    jQuery(".search-bar-input").on('keyup', delay(function() {
-        $(".search-card").removeClass('d-none').show();
-        let name = $(".search-bar-input").val();
-        if (name.length > 0 || isNaN(name)) {
-            $.get({
-                url: 'https://6pos.6amtech.com/admin/pos/search-by-add',
-                dataType: 'json',
-                data: {
-                    name: name
-                },
-                success: function(data) {
-                    if (data.count == 1) {
-                        $('#search').attr("disabled", true);
-                        addToCart(data.id);
-                        $('#search').attr("disabled", false);
-                        $('.search-result-box').empty().html(data.result);
-                        $('#search').val('');
-                        $('#search-box').addClass('d-none');
-                    }
-                },
-            });
-        } else {
-            $('.search-result-box').empty();
-        }
-    }, 1000));
+   
 
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -652,6 +783,7 @@ $conn->close();
         const discountInputElement = document.getElementById('dis_amount');
         const paidAmountElement = document.getElementById('paid_amount');
         const balanceElement = document.getElementById('balance');
+
         let totalPrice = 0;
         let discountAmount = 0;
         let itemIdCounter = 1;
@@ -678,38 +810,51 @@ $conn->close();
         }
 
         function calculateTotal() {
-            let subtotal = 0;
-            let discount = 0;
-            let paidAmount = 0;
+    let subtotal = 0;
+    let discount = 0;
+    let paidAmount = 0;
 
-            // Calculate subtotal
-            detailTableBody.querySelectorAll('tr').forEach(row => {
-                const price = parseFloat(row.querySelector('.selling-price').textContent) || 0;
-                const quantity = parseInt(row.querySelector('.qty-input').value, 10) || 0;
-                subtotal += price * quantity;
-            });
+    // Calculate subtotal
+    detailTableBody.querySelectorAll('tr').forEach(row => {
+        // Correctly select the input element and its value
+        const priceInput = row.querySelector('.selling-price');
+        const quantityInput = row.querySelector('.qty-input');
 
+        // Ensure priceInput and quantityInput exist before accessing their values
+        const price = parseFloat(priceInput ? priceInput.value : 0) || 0;
+        const quantity = parseInt(quantityInput ? quantityInput.value : 0, 10) || 0;
+        
+        subtotal += price * quantity;
+        console.log(`selling-price': ${price.toFixed(2)}`);
+    });
 
-            const discountText = extraDiscountElement.nextElementSibling.textContent.trim();
-            discount = parseFloat(discountText) || 0;
+    // Get discount value
+    const discountText = extraDiscountElement.nextElementSibling.textContent.trim();
+    discount = parseFloat(discountText) || 0;
 
-            const totalPrice = subtotal - discount;
+    const totalPrice = subtotal - discount;
 
-            const paidAmountText = paidAmountElement.value.trim();
-            paidAmount = parseFloat(paidAmountText) || 0;
+    // Get paid amount value
+    const paidAmountText = paidAmountElement.value.trim();
+    paidAmount = parseFloat(paidAmountText) || 0;
 
-            const balance = totalPrice - paidAmount;
+    const balance = totalPrice - paidAmount;
 
-            subtotalElement.textContent = `${subtotal.toFixed(2)}`;
-            totalPriceElement.textContent = `${totalPrice.toFixed(2)}`;
-            balanceElement.textContent = `${balance.toFixed(2)}`;
+    // Update the UI
+    subtotalElement.textContent = `${subtotal.toFixed(2)}`;
+    totalPriceElement.textContent = `${totalPrice.toFixed(2)}`;
+    balanceElement.textContent = `${balance.toFixed(2)}`;
 
-            //     console.log(`Subtotal: ${subtotal.toFixed(2)}`);
-            // console.log(`Discount: ${discount.toFixed(2)}`);
-            // console.log(`Total Price: ${totalPrice.toFixed(2)}`);
-            // console.log(`Paid Amount: ${paidAmount.toFixed(2)}`);
-            // console.log(`Balance: ${balance.toFixed(2)}`);
-        }
+    // Logging for debugging
+
+    
+    console.log(`Subtotal: ${subtotal.toFixed(2)}`);
+    console.log(`Discount: ${discount.toFixed(2)}`);
+    console.log(`Total Price: ${totalPrice.toFixed(2)}`);
+    console.log(`Paid Amount: ${paidAmount.toFixed(2)}`);
+    console.log(`Balance: ${balance.toFixed(2)}`);
+}
+
 
 
         dataTable.addEventListener('click', function(event) {
@@ -718,9 +863,10 @@ $conn->close();
                 const id = row.getAttribute('data-id');
                 const name = row.getAttribute('data-name');
                 const stock = row.getAttribute('data-stock');
+                const warranty = row.getAttribute('data-warranty');
                 const c_profit = 0.0;
                 const sellingPrice = parseFloat(row.getAttribute('data-selling-price'));
-
+                const itemPrice = parseFloat(row.getAttribute('data-item-price'));
                 const existingRow = Array.from(detailTableBody.querySelectorAll('tr'))
                     .find(row => row.getAttribute('data-id') === id);
 
@@ -731,12 +877,21 @@ $conn->close();
                     const newRow = document.createElement('tr');
                     newRow.setAttribute('data-id', id);
                     newRow.innerHTML = `
-                    <td>${itemIdCounter++}</td>
+                    <td>${id}</td>
                     <td class="product">${name}</td>
                     <td class="input-section"><input type="number" class="qty-input" value="1" min="1" data-stock="${stock}" /></td>
-                    <td contenteditable="true" class="selling-price" data-original-price="${sellingPrice.toFixed(2)}">${sellingPrice.toFixed(2)}</td>
-                    <td contenteditable="true" class="old-selling-price" style="display: none;">${sellingPrice.toFixed(2)}</td>
+                    <td><input type="number" class="selling-price" value="${sellingPrice.toFixed(2)}" style="width: 80%;"/></td>
+                    <td contenteditable="true" class="old-selling-price" style="display: non;">${itemPrice.toFixed(2)}</td>
                     <td style="display: none;"><p class="customer_profit">${c_profit}</p></td>
+                    <td><select class="warranty-select">
+                            <option value="No warranty" ${warranty === 'No warranty' ? 'selected' : ''}>No warranty</option>
+                            <option value="3 month" ${warranty === '3 month' ? 'selected' : ''}>3 month</option>
+                            <option value="6 month" ${warranty === '6 month' ? 'selected' : ''}>6 month</option>
+                            <option value="1 year" ${warranty === '1 year' ? 'selected' : ''}>1 year</option>
+                            <option value="2 year" ${warranty === '2 year' ? 'selected' : ''}>2 year</option>
+                            <option value="3 year" ${warranty === '3 year' ? 'selected' : ''}>3 year</option>
+                        </select>
+                    </td>
                     <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
                 `;
                     detailTableBody.appendChild(newRow);
@@ -745,7 +900,7 @@ $conn->close();
                 calculateTotal(); // Update total price after adding or updating an item
             }
         });
-
+        //<td id="selling-price" contenteditable="true" class="selling-price" data-original-price="${sellingPrice.toFixed(2)}">${sellingPrice.toFixed(2)}</td>
         // Custom alert function
         function showCustomAlert(message) {
             const alertDiv = document.createElement('div');
@@ -762,45 +917,54 @@ $conn->close();
 
         // Event listener for quantity input change
         detailTableBody.addEventListener('input', function(event) {
-            if (event.target.classList.contains('qty-input')) {
-                const inputField = event.target;
-                const currentQuantity = parseInt(inputField.value, 10);
-                const stock = parseInt(inputField.getAttribute('data-stock'), 10);
+    if (event.target.classList.contains('qty-input')) {
+        const inputField = event.target;
+        const currentQuantity = parseInt(inputField.value, 10);
+        const stock = parseInt(inputField.getAttribute('data-stock'), 10);
 
-                if (currentQuantity > stock) {
-                    showCustomAlert('Quantity exceeds available stock!');
-                    inputField.value = ''; // Clear input
-                } else {
-                    const row = inputField.closest('tr');
-                    const productName = row.querySelector('.product').textContent;
+        if (currentQuantity > stock) {
+            showCustomAlert('Quantity exceeds available stock!');
+            inputField.value = ''; // Clear input
+        } else {
+            const row = inputField.closest('tr');
+            const productName = row.querySelector('.product').textContent;
 
-                    // Recalculate total price when quantity changes
+            // Recalculate total price when quantity changes
+            // Update selling price and customer profit on quantity change
+            updateSellingPrice(row, productName, currentQuantity)
+                .then(() => {
+                    // Ensure updateCustomerProfit is called after updateSellingPrice
+                    updateCustomerProfit(row);
                     calculateTotal();
+                })
+                .catch(error => {
+                    console.error('Error updating selling price:', error);
+                });
+        }
+    }
 
-                    // Update selling price and customer profit on quantity change
-                    updateSellingPrice(row, productName, currentQuantity)
-                        .then(() => {
-                            // Ensure updateCustomerProfit is called after updateSellingPrice
-                            updateCustomerProfit(row);
-                        })
-                        .catch(error => {
-                            console.error('Error updating selling price:', error);
-                        });
-                }
-            }
-        });
+    if (event.target.classList.contains('selling-price')) {
+        const inputField = event.target;
+        const row = inputField.closest('tr');
+
+        // Update customer profit when selling price changes
+        updateCustomerProfit(row);
+        calculateTotal();
+    }
+});
+
 
         // Event listener for paid amount input change
         document.getElementById('paid_amount').addEventListener('input', function() {
             calculateTotal();
         });
 
-
-
+      
+        
 
 
         function updateCustomerProfit(row) {
-            console.log('updateCustomerProfit stated'); // Debug: Check if function is called
+            console.log('updateCustomerProfit started'); // Debug: Check if function is called
 
             // Ensure row is passed as a parameter to the function
             if (!row) {
@@ -810,18 +974,18 @@ $conn->close();
 
             // Fetch the new selling price
             const sellingPriceElement = row.querySelector('.selling-price');
-            const newSellingPrice = parseFloat(sellingPriceElement.textContent) || 0;
+            const newSellingPrice = parseFloat(sellingPriceElement ? sellingPriceElement.value : 0) || 0;
 
             // Fetch the old selling price
             const oldSellingPriceElement = row.querySelector('.old-selling-price');
-            const oldSellingPrice = parseFloat(oldSellingPriceElement.textContent) || 0;
+            const oldSellingPrice = parseFloat(oldSellingPriceElement ? oldSellingPriceElement.textContent : 0) || 0;
+
+            // Fetch the quantity
+            const qtyInput = row.querySelector('.qty-input');
+            const qty = parseInt(qtyInput ? qtyInput.value : 0, 10) || 0;
 
             // Calculate customer profit
-            const customerProfit = oldSellingPrice - newSellingPrice;
-
-            if (newSellingPrice == "") {
-                customerProfit = 0.00;
-            }
+            const customerProfit = (oldSellingPrice - newSellingPrice) * qty;
 
             // Update the customer profit display
             const customerPriceElement = row.querySelector('.customer_profit');
@@ -837,25 +1001,26 @@ $conn->close();
 
 
         function updateSellingPrice(row, productName, quantity) {
-            console.log(
-                `Fetching new selling price for ${productName} with quantity ${quantity}`
-            ); // Debug: Output fetch request details
+            console.log(`Fetching new selling price for ${productName} with quantity ${quantity}`);
 
-            return fetchSellingPrice(productName, quantity) // Ensure this returns a Promise
+            return fetchSellingPrice(productName, quantity)
                 .then(newPrice => {
                     if (isNaN(newPrice)) {
                         throw new Error('Invalid selling price received');
                     }
-                    console.log(
-                        `New selling price received: ${newPrice}`); // Debug: Output new selling price
+                    console.log(`New selling price received: ${newPrice}`);
+
                     const sellingPriceElement = row.querySelector('.selling-price');
                     if (sellingPriceElement) {
-                        sellingPriceElement.textContent = newPrice.toFixed(2); // Ensure correct formatting
+                        sellingPriceElement.value = newPrice.toFixed(2); // Update the value of the input element
+                        sellingPriceElement.setAttribute('data-original-price', newPrice.toFixed(2)); // Update data attribute if needed
                     } else {
                         console.error('Selling price element not found');
                     }
-                    // Return a resolved Promise to allow chaining
-                    return Promise.resolve();
+                    return Promise.resolve(); // Return a resolved Promise to allow chaining
+                })
+                .catch(error => {
+                    console.error('Error updating selling price:', error);
                 });
         }
 
@@ -932,13 +1097,13 @@ $conn->close();
                     const qty = parseFloat(qtyInputElement.value) || 0; // Use value of the input field
 
                     // Calculate customer profit for this row
-                    const rowCustomerProfit = cProfit * qty;
-                    totalCustomerProfit += rowCustomerProfit;
+                    // const rowCustomerProfit = cProfit * qty;
+                    totalCustomerProfit += cProfit;
 
                     // Log values for debugging
-                    console.log(
-                        `Row data - cProfit: ${cProfit}, qty: ${qty}, rowCustomerProfit: ${rowCustomerProfit}`
-                    );
+                    // console.log(
+                    //     `Row data - cProfit: ${cProfit}, qty: ${qty}, rowCustomerProfit: ${rowCustomerProfit}`
+                    // );
                 }
             });
 
@@ -957,79 +1122,92 @@ $conn->close();
 
 
         document.querySelector('a[href="save_sale.php"]').addEventListener('click', function(event) {
-            event.preventDefault();
+    event.preventDefault();
+    
+    // Get user input elements
+    const username = document.getElementById('username2').value.trim();
+    const contactNumber2 = document.getElementById('contactNumber2').value.trim();
+    const vehicleNumber = document.getElementById('vehicleNumber2').value.trim();
 
-            console.log('sahsahsuhas');
-            const rows = document.querySelectorAll('#detailTable tbody tr');
-            const numberOfItem = rows.length;
+    // Check if the username and vehicle number are filled
+    if (!username || !contactNumber2 || !vehicleNumber) {
+        alert('Please fill in both the Username and Vehicle Number.');
+        return;
+    }
 
-            // Calculate total quantity
-            const totalQty = Array.from(rows).reduce((acc, row) => {
-                const qtyInput = row.querySelector('.qty-input');
-                return acc + (parseInt(qtyInput.value, 10) || 0);
-            }, 0);
+    const rows = document.querySelectorAll('#detailTable tbody tr');
+    const numberOfItem = rows.length;
 
-            // Calculate total price
-            const total = parseFloat(totalPriceElement.textContent) || 0;
+    // Calculate total quantity
+    const totalQty = Array.from(rows).reduce((acc, row) => {
+        const qtyInput = row.querySelector('.qty-input');
+        return acc + (parseInt(qtyInput.value, 10) || 0);
+    }, 0);
 
-            // Calculate total discount
-            const totalDiscount = parseFloat(document.getElementById('discount_amount')
-                    .textContent) ||
-                0;
+    // Calculate total price
+    const total = Array.from(rows).reduce((acc, row) => {
+        const qtyInput = row.querySelector('.qty-input');
+        const sellingPrice = parseFloat(row.querySelector('.selling-price').value) || 0;
+        return acc + (sellingPrice * (parseInt(qtyInput.value, 10) || 0));
+    }, 0);
 
-            // Calculate paid amount
-            const paidAmount = parseFloat(paidAmountElement.value) || 0;
+    // Calculate total discount
+    const totalDiscount = parseFloat(document.getElementById('discount_amount').textContent) || 0;
 
-            // Calculate customer profit
-            const customerProfit = calculateCustomerProfit();
+    // Calculate paid amount
+    const paidAmount = parseFloat(paidAmountElement.value) || 0;
 
-            // Check if paid amount is zero
-            if (paidAmount <= 0) {
-                alert('Please enter a valid paid amount.');
-                return;
+    // Calculate customer profit
+    const customerProfit = calculateCustomerProfit();
+
+    // Check if paid amount is zero
+    // if (paidAmount <= 0) {
+    //     alert('Please enter a valid paid amount.');
+    //     return;
+    // }
+
+    // Collect all product data
+    const products = Array.from(rows).map(row => {
+        return {
+            productName: row.querySelector('.product').textContent.trim(),
+            warranty: row.querySelector('.warranty-select').value, 
+            qty: parseInt(row.querySelector('.qty-input').value, 10) || 0,
+            sellPrice: parseFloat(row.querySelector('.selling-price').value) || 0,
+            totalPrice: parseFloat(row.querySelector('.selling-price').value) * (parseInt(row.querySelector('.qty-input').value, 10) || 0)
+        };
+    });
+
+    // Send data to the server
+    fetch('save_sale.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                username: username, 
+                contactNumber2: contactNumber2,
+                vehicleNumber: vehicleNumber, 
+                numberOfItem: numberOfItem,
+                totalQty: totalQty,
+                total: total,
+                totalDiscount: totalDiscount,
+                customerProfit: customerProfit,
+                subTotal: parseFloat(subtotalElement.textContent) || 0,
+                paidAmount: paidAmount,
+                balance: paidAmount - total,
+                items: JSON.stringify(products) // Send products data as JSON
+            })
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            if (data.includes('Sale saved successfully!')) {
+                clearTables(); // Clear tables and reset variables
+                location.reload();
             }
-
-            // Collect all product data
-            const products = Array.from(rows).map(row => {
-                return {
-                    productName: row.querySelector('.product').textContent.trim(),
-                    qty: parseInt(row.querySelector('.qty-input').value, 10) || 0,
-                    sellPrice: parseFloat(row.querySelector('.selling-price')
-                        .textContent) || 0,
-                    totalPrice: parseFloat(row.querySelector('.selling-price')
-                        .textContent) * (
-                        parseInt(row.querySelector('.qty-input').value, 10) || 0)
-                };
-            });
-
-            // Send data to the server
-            fetch('save_sale.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        numberOfItem: numberOfItem,
-                        totalQty: totalQty,
-                        total: total,
-                        totalDiscount: totalDiscount,
-                        customerProfit: customerProfit,
-                        subTotal: parseFloat(subtotalElement.textContent) || 0,
-                        paidAmount: paidAmount,
-                        balance: paidAmount - total,
-                        items: JSON.stringify(products) // Send products data as JSON
-                    })
-                })
-                .then(response => response.text())
-                .then(data => {
-                    alert(data);
-                    if (data.includes('Sale saved successfully!')) {
-                        clearTables(); // Clear tables and reset variables
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        });
-
+        })
+        .catch(error => console.error('Error:', error));
+});
 
     });
     </script>

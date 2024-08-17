@@ -5,7 +5,7 @@
             <span>Home</span>
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" href="retail-dashboard.php">
             <i class="fa fa-fw fa-line-chart"></i>
             <span>Retail Dashboard</span>
@@ -15,7 +15,7 @@
           <a class="nav-link" href="sales-reports.php">
             <i class="fa fa-fw fa-bar-chart"></i>
             <span>Sales Reports</span></a>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="nav-link" href="inventory-reports.php">
             <i class="fa fa-fw fa-tags"></i>
@@ -32,9 +32,14 @@
             <span>Check Sales</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="" data-toggle="modal" data-target="#addSaleModal">
-            <i class="fa fa-fw fa-plus"></i>
-            <span>Record New Sale</span></a>
+          <a class="nav-link" href="pending.php">
+            <i class="fa fa-fw fa-table"></i>
+            <span>Pending</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="updatecus.php">
+            <i class="fa fa-fw fa-table"></i>
+            <span>Customer</span></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="" data-toggle="modal" data-target="#addProductModal">
@@ -46,12 +51,17 @@
             <i class="fa fa-fw fa-industry"></i>
             <span>Item Categories</span></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="product-vendors.php">
+       <li class="nav-item">
+          <a class="nav-link" href="Product-stock.php">
             <i class="fa fa-fw fa-users"></i>
-            <span>Product Vendors</span></a>
+            <span>Product Stock</span></a>
         </li>
-        <li class="nav-item dropdown">
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="stoke_status.php">
+            <i class="fa fa-fw fa-users"></i>
+            <span>Stock status</span></a>
+        </li> -->
+        <!-- <li class="nav-item dropdown">
           <a class="nav-link" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-fw fa-folder"></i>
             <span>
@@ -92,5 +102,5 @@
           <a class="nav-link" href="help.php">
             <i class="fa fa-fw fa-life-ring"></i>
             <span>Help</span></a>
-        </li>
+        </li> -->
       </ul>

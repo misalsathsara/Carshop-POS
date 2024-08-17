@@ -138,52 +138,54 @@ $conn->close();
                         <label>Warranty</label>
                         <select class="form-control text-primary" name="warranty" required>
                             <option disabled selected><sub>Please select a warranty</sub></option>
-                            <option>3 Month</option>
-                            <option>6 Month</option>
-                            <option>1 Year</option>
-                            <option>2 Year</option>
+                            <option>No warranty</option>
+                            <option>3 month</option>
+                            <option>6 month</option>
+                            <option>1 year</option>
+                            <option>2 year</option>
+                            <option>3 year</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="">Product Name</label>
-                        <input type="text" class="form-control" name="product_name" placeholder="Enter product name..."
+                        <input type="text" class="form-control" name="product_name" 
                             required>
-                        <small class="text-muted">Be more specific with product names. Make sure it's unique.</small>
+                        <!-- <small class="text-muted">Be more specific with product names. Make sure it's unique.</small> -->
                     </div>
 
                     <div class="form-group">
-                        <label for="">Product Cost Price <small class="text-muted">(Cost Price)</small> </label>
+                        <label for="">Product Cost Price <small class="text-muted"></small> </label>
                         <input type="number" class="form-control" name="product_cost_price"
-                            placeholder="Enter Cost price per item..." required>
+                             required>
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="">Product Wholesale Price <small class="text-muted">(Wholesale Price)</small>
                         </label>
                         <input type="number" class="form-control" name="product_wholesale_price"
                             placeholder="Enter Wholesale price per item..." required>
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
-                        <label for="">Product Price <small class="text-muted">(Item Price)</small> </label>
+                        <label for="">Product Price <small class="text-muted"></small> </label>
                         <input type="number" class="form-control" name="product_price"
-                            placeholder="Enter Item price per item..." required>
+                             required>
                     </div>
 
                     <div class="form-group">
-                        <label for="">Product Selling Price <small class="text-muted">(Sell Price)</small> </label>
+                        <label for="">Product Selling Price <small class="text-muted"></small> </label>
                         <input type="number" class="form-control" name="product_selling_price"
-                            placeholder="Enter Sell price per item..." required>
+                            required>
                     </div>
                     <div class="form-group">
-                        <label for="">Product Stock <small>(How many products are you adding in stock?)</small> </label>
+                        <label for="">Product Stock <small></small> </label>
                         <input type="number" class="form-control" name="product_stock"
-                            placeholder="Enter number of items..." required>
-                        <small class="text-muted">This will be used as product quantity in stock keeping unit.</small>
+                            required>
+                        <!-- <small class="text-muted">This will be used as product quantity in stock keeping unit.</small> -->
                     </div>
 
                     <!-- Discount Prices for 3 Products -->
-                    <h6>Discounts for Quantities</h6>
+                    <!-- <h6>Discounts for Quantities</h6>
                     <div class="form-group">
                         <label for="quantity1">Quantity 1</label>
                         <input type="number" id="quantity1" class="form-control" name="quantity1"
@@ -204,9 +206,9 @@ $conn->close();
                             placeholder="Enter quantity">
                         <label for="price3">Price 3</label>
                         <input type="number" id="price3" class="form-control" name="price3" placeholder="Enter price">
-                    </div>
+                    </div> -->
 
-                    <small class="text-muted"><em>Please double check information before submitting.</em></small>
+                    <!-- <small class="text-muted"><em>Please double check information before submitting.</em></small> -->
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
@@ -239,14 +241,14 @@ $conn->close();
                         <label for="">Product Type</label>
                         <input type="text" class="form-control" name="" value="" placeholder="Enter product type..."
                             required>
-                        <small class="text-muted">Example: Mousepads, Headphones or Keyboards etc</small>
+                        <!-- <small class="text-muted">Example: Mousepads, Headphones or Keyboards etc</small> -->
                     </div>
                     <div class="form-group">
                         <label for="">Description <small class="text-muted">(Optional)</small></label>
                         <textarea name="name" class="form-control" rows="8" cols="80"
                             placeholder="Add some note or description about this product type..."></textarea>
                     </div>
-                    <small class="text-muted"><em>Please double check information before submitting.</em></small>
+                    <!-- <small class="text-muted"><em>Please double check information before submitting.</em></small> -->
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
@@ -277,12 +279,12 @@ $conn->close();
                         <label for="">Product Category</label>
                         <input type="text" class="form-control" name="category_name" value=""
                             placeholder="Enter Category name here..." required>
-                        <small class="text-muted">Example: Speakers, Subwoofer or Head light etc</small>
+                        <!-- <small class="text-muted">Example: Speakers, Subwoofer or Head light etc</small> -->
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <input type="submit" class="btn btn-primary" value="Add Brand">
+                    <input type="submit" class="btn btn-primary" value="Add Category">
                 </div>
             </form>
         </div>
@@ -403,7 +405,7 @@ $conn->close();
 
                     <!-- Display the Product ID -->
                     <div class="form-group">
-                        <label id="editProductIdLabel" for="editProductName">Product ID</label>
+                        <label id="editProductIdLabel" for="editProductName">Product ID: <span id="editProductId"></span></label>
                     </div>
 
                     <!-- Product Name -->
@@ -419,11 +421,11 @@ $conn->close();
                     </div>
 
                     <!-- Wholesale Price -->
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="editWholesalePrice">Wholesale Price</label>
                         <input type="number" id="editWholesalePrice" class="form-control" name="wholesale_price"
                             required>
-                    </div>
+                    </div> -->
 
                     <!-- Price -->
                     <div class="form-group">
@@ -442,10 +444,12 @@ $conn->close();
                         <label for="editWarranty">Warranty</label>
                         <select id="editWarranty" class="form-control" name="warranty" required>
                             <option value="" disabled>Select Warranty</option>
-                            <option value="6 months">6 months</option>
-                            <option value="1 year">1 year</option>
-                            <option value="2 years">2 years</option>
-                            <option value="3 years">3 years</option>
+                            <option>No warranty</option>
+                            <option>3 month</option>
+                            <option>6 month</option>
+                            <option>1 year</option>
+                            <option>2 year</option>
+                            <option>3 year</option>
                         </select>
                     </div>
 
@@ -456,7 +460,8 @@ $conn->close();
                     </div>
 
                     <!-- Discount Quantities and Prices -->
-                    <h6>Discounts for Quantities</h6>
+                    <!-- <h6>Discounts for Quantities</h6>
+                    
                     <div class="form-group">
                         <label for="quantity1">Quantity 1</label>
                         <input type="number" id="quantity1" class="form-control" name="quantity1"
@@ -478,7 +483,7 @@ $conn->close();
                         <label for="price3">Price 3</label>
                         <input type="number" id="price3" class="form-control" name="price3" placeholder="Enter price">
                     </div>
-                </div>
+                </div> -->
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     <input type="submit" class="btn btn-primary" value="Save Changes">
@@ -492,30 +497,4 @@ $conn->close();
 
 
 
-<!-- Delete Product Modal -->
-<div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteProductLabel">
-                    <i class="fa fa-trash"></i>
-                    Delete Product
-                </h5>
-                <button class="close text-white" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <form action="product-delete.php" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" id="deleteProductId" name="id">
-                    <p>Are you sure you want to delete this product?</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <input type="submit" class="btn btn-danger" value="Delete">
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+

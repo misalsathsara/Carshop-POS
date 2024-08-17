@@ -23,7 +23,7 @@ body {
 
 body.fixed-nav #content-wrapper {
   margin-top: 56px;
-  padding-left: 90px;
+  //padding-left: 90px;
 }
 
 body.fixed-nav.sidebar-toggled #content-wrapper {
@@ -127,7 +127,7 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
 
 .sidebar {
   width: 90px !important;
-  background-color: #212529;
+  background-color: #ffff !important;
   min-height: calc(100vh - 56px);
 }
 
@@ -164,11 +164,14 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
 }
 
 .sidebar .nav-item .nav-link {
-  color: rgba(255, 255, 255, 0.5);
+  color: black;
+  font-weight:500;
+  transition: .5s;
 }
 
 .sidebar .nav-item .nav-link:active, .sidebar .nav-item .nav-link:focus, .sidebar .nav-item .nav-link:hover {
-  color: rgba(255, 255, 255, 0.75);
+  color: black;
+  scale: 1.1;
 }
 
 .sidebar.toggled {

@@ -4,12 +4,14 @@
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
-
 require 'db.php'; 
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Retrieve data from POST request
+
+    $username = $_POST['username'];
+    $contact2 = $_POST['contactNumber2'];
+    $vehicleNumber = $_POST['vehicleNumber'];
     $numberOfItem = $_POST['numberOfItem'] ?? 0;
     $totalQty = $_POST['totalQty'] ?? 0;
     $total = $_POST['total'] ?? 0;
@@ -20,38 +22,83 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $balance = $_POST['balance'] ?? 0;
     $items = $_POST['items'] ?? '[]'; 
 
-    // Output POST data for debugging
-    // echo "<pre>";
-    // echo "POST Data:\n";
-    // print_r($_POST);
-    // echo "Items Data:\n";
-    // print_r(json_decode($items, true)); 
-    // echo "</pre>";
+
+//  echo '<pre>';
+//     echo "Username: " . $username . "<br>";
+//     echo "Contact Number: " . $contact2 . "<br>";
+//     echo "Vehicle Number: " . $vehicleNumber . "<br>";
+//     echo "Number of Items: " . $numberOfItem . "<br>";
+//     echo "Total Quantity: " . $totalQty . "<br>";
+//     echo "Total: " . $total . "<br>";
+//     echo "Total Discount: " . $totalDiscount . "<br>";
+//     echo "Customer Profit: " . $customerProfit . "<br>";
+//     echo "Sub Total: " . $subTotal . "<br>";
+//     echo "Paid Amount: " . $paidAmount . "<br>";
+//     echo "Balance: " . $balance . "<br>";
+//     echo "Items: " . htmlspecialchars($items) . "<br>";
+//     echo '</pre>';
+
 
     // Generate sale ID
-    $saleid = 'SALE' . time();
+    // $saleid = 'SALE' . time();
 
     // Begin transaction
     $conn->begin_transaction();
 
     try {
         // Create SQL INSERT statement for sales
-        $sql = "INSERT INTO sales (saleid, numberOfItem, total_Qty, Total, Total_Discount, Customer_Profit, subTotal, paid_amount, balance) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+        if (isset($_SESSION['pending']) && $_SESSION['pending'] == "active") {
+            $insert_query = "INSERT INTO pending (username, contact, vehicle_number, numberOfItem, total_Qty, Total, Total_Discount, Customer_Profit, subTotal, paid_amount, balance) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        } else {
+            $insert_query = "INSERT INTO sales (username, contact, vehicle_number, numberOfItem, total_Qty, Total, Total_Discount, Customer_Profit, subTotal, paid_amount, balance) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        }   
         // Prepare statement
-        if ($stmt = $conn->prepare($sql)) {
+        if ($stmt = $conn->prepare($insert_query)) {
             // Bind parameters
-            $stmt->bind_param('siiiddddd', $saleid, $numberOfItem, $totalQty, $total, $totalDiscount, $customerProfit, $subTotal, $paidAmount, $balance);
+            $stmt->bind_param('sssiidddddd', $username, $contact2, $vehicleNumber, $numberOfItem, $totalQty, $total, $totalDiscount, $customerProfit, $subTotal, $paidAmount, $balance);
 
-            // Execute the statement
-            if (!$stmt->execute()) {
+            if ($stmt->execute()) {
+                // Get the last inserted ID
+                $saleid = $conn->insert_id;
+            } else {
                 throw new Exception('Error executing sales statement: ' . $stmt->error);
             }
             $stmt->close();
         } else {
             throw new Exception('Error preparing sales statement: ' . $conn->error);
         }
+
+
+        if (isset($_SESSION['pending']) && $_SESSION['pending'] == "active" && isset($_SESSION['customer'])) {
+            $cusid = intval($_SESSION['customer']); // Sanitize customer ID
+        
+            $sql = "SELECT credit FROM customer WHERE id = $cusid";
+            $result = mysqli_query($conn, $sql);
+        
+            if ($result && mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                $current_credit = $row['credit'];
+        
+                if (isset($paidAmount) && isset($subTotal) && $paidAmount <= $subTotal) {
+                    $added = $subTotal - $paidAmount;
+                    $new_credit = $current_credit + $added;
+        
+                    $sql = "UPDATE customer SET credit = '$new_credit' WHERE id = $cusid";
+                    $result = mysqli_query($conn, $sql);
+        
+                    if ($result) {
+                        // Update was successful
+                    } else {
+                        // Handle update error
+                    }
+                }
+            } else {
+                // Handle error: customer not found
+            }
+        }
+        
 
         if (!empty($_SESSION['details'])) {
             // Extract details from the session array
@@ -64,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt = $conn->prepare($sql)) {
                 // Bind parameters from session details
                 $stmt->bind_param(
-                    'ssssss',
+                    'isssss',
                     $saleid,
                     $details['app_name'],
                     $details['server'],
@@ -92,14 +139,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new Exception('Error decoding JSON data: ' . json_last_error_msg());
         }
 
-
         foreach ($items as $item) {
             $item_price = 0;
 
             $productName = $item['productName'];
+            $warranty = $item['warranty'];
             $qty = $item['qty'];
             $selling_price = $item['sellPrice'];
-            $total_price = $item['totalPrice'];
+            $total_price =  $selling_price * $qty;
 
             // Fetch item price from database
             $sql = "SELECT price, stock, cost_price FROM products WHERE name = ?";
@@ -125,12 +172,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             // Insert data into cart table
-            $sql = "INSERT INTO cart (saleid, productName, qty, item_price, selling_price, total_price) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO cart (saleid, productName, warranty, qty, item_price, selling_price, total_price) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             if ($stmt = $conn->prepare($sql)) {
                 // Bind parameters
-                $stmt->bind_param('ssiddd', $saleid, $productName, $qty, $item_price, $selling_price, $total_price);
+                $stmt->bind_param('issiddd', $saleid, $productName, $warranty, $qty, $item_price, $selling_price, $total_price);
 
                 // Execute the statement
                 if (!$stmt->execute()) {
@@ -159,27 +206,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Calculate profit
             $profit = (($selling_price - $cost_price) * $qty);
-           
+            $profit2 += $profit;
         }
-                $total_profit = $profit - $totalDiscount;
 
-            // Insert profit data into profit table
-            $sql = "INSERT INTO profit (saleid, profit) VALUES (?, ?)";
-            if ($stmt = $conn->prepare($sql)) {
-                // Bind parameters
-                $stmt->bind_param('sd', $saleid, $total_profit);
+        $total_profit = $profit2 - $totalDiscount;
 
-                // Execute the statement
-                if (!$stmt->execute()) {
-                    throw new Exception('Error executing profit statement: ' . $stmt->error);
-                }
-                $stmt->close();
-            } else {
-                throw new Exception('Error preparing profit statement: ' . $conn->error);
+        // Insert profit data into profit table
+        $sql = "INSERT INTO profit (saleid, profit) VALUES (?, ?)";
+        if ($stmt = $conn->prepare($sql)) {
+            // Bind parameters
+            $stmt->bind_param('id', $saleid, $total_profit);
+
+            // Execute the statement
+            if (!$stmt->execute()) {
+                throw new Exception('Error executing profit statement: ' . $stmt->error);
             }
+            $stmt->close();
+        } else {
+            throw new Exception('Error preparing profit statement: ' . $conn->error);
+        }
+
         // Commit transaction
         $conn->commit();
         echo 'Sale saved successfully!';
+        unset($_SESSION['pending']);
+        unset($_SESSION['customer']);
+        // Redirect to bill.php after successfully saving the sale
+        // header('Location: bill.php');
+        // exit();
+
     } catch (Exception $e) {
         // Rollback transaction on error
         $conn->rollback();

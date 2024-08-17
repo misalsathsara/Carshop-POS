@@ -1,7 +1,7 @@
 <?php
 include 'db.php';
 
-if (!isset($_POST['id']) || empty($_POST['id']) || !is_numeric($_POST['id'])) {
+if (!isset($_POST['id']) || empty($_POST['id'])) {
     die("Invalid ID.");
 }
 
@@ -11,7 +11,7 @@ $stmt = $conn->prepare("DELETE FROM products WHERE id=?");
 if (!$stmt) {
     die("Prepare failed: " . $conn->error);
 }
-$stmt->bind_param("i", $id);
+$stmt->bind_param("s", $id);
 
 if ($stmt->execute()) {
     header("Location: inventory-reports.php");

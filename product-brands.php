@@ -49,29 +49,26 @@
                                 <tr>
                                     <th>Sr#</th>
                                     <th>Category Name</th>
-                                    <!-- <th>Action</th> -->
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
                                     <th>Sr#</th>
                                     <th>Category Name</th>
-                                    <!-- <th>Action</th> -->
+                                    <th>Action</th>
                                 </tr>
                             </tfoot>
                             <tbody>
-                                <?php
-                      foreach ($categories as $index => $category) {
-                        echo "<tr>";
-                        echo "<td>" . ($index + 1) . "</td>";
-                        echo "<td>" . htmlspecialchars($category['name']) . "</td>";
-                        // echo "<td>
-                        //       <button class='btn btn-sm btn-danger'>Delete</button>
-                        //       <button class='btn btn-sm btn-primary'>Edit</button>
-                        //       </td>";
-                        echo "</tr>";
-                      }
-                    ?>
+                                <?php foreach ($categories as $index => $category) : ?>
+                                    <tr>
+                                        <td><?php echo ($index + 1); ?></td>
+                                        <td><?php echo htmlspecialchars($category['name']); ?></td>
+                                        <td>
+                                            <button class='btn btn-sm btn-danger' onclick="deleteCategory('<?php echo htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8'); ?>')">Delete</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -80,9 +77,15 @@
             </div>
         </div>
         <br><br><br>
-        <!-- Sticky Footer -->
+      
+        <script>
+    function deleteCategory(categoryName) {
+        window.location.href = "deleteCategory.php?category=" + encodeURIComponent(categoryName);
+    }
+</script>
 
-        <!-- Sticky Footer -->
+
+
         <?php
             include 'footer.php';
          ?>

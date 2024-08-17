@@ -49,8 +49,7 @@
                                     <th>ID</th>
                                     <th>Category</th>
                                     <th>Name</th>
-                                    <th>Wholesale Cost</th>
-                                    <th>Item Price</th>
+                                    <th>Cost Price</th>
                                     <th>Item Price</th>
                                     <th>Selling Price</th>
                                     <th>Warranty</th>
@@ -63,8 +62,7 @@
                                     <th>ID</th>
                                     <th>Category</th>
                                     <th>Name</th>
-                                    <th>Wholesale Cost</th>
-                                    <th>Item Price</th>
+                                    <th>Cost Price</th>
                                     <th>Item Price</th>
                                     <th>Selling Price</th>
                                     <th>Warranty</th>
@@ -74,14 +72,13 @@
                             </tfoot>
                             <tbody>
                             <tbody>
-                                <?php
+                            <?php
 foreach ($products as $index => $product) {
     echo "<tr>";
-    echo "<td>" . ($index + 1) . "</td>";
+    echo "<td>" . htmlspecialchars($product['id']) . "</td>";
     echo "<td>" . htmlspecialchars($product['category']) . "</td>";
     echo "<td>" . htmlspecialchars($product['name']) . "</td>";
     echo "<td>" . htmlspecialchars($product['cost_price']) . "</td>";
-    echo "<td>" . htmlspecialchars($product['wholesale_price']) . "</td>";
     echo "<td>" . htmlspecialchars($product['price']) . "</td>";
     echo "<td>" . htmlspecialchars($product['selling_price']) . "</td>";
     echo "<td>" . htmlspecialchars($product['warranty']) . "</td>";
@@ -96,13 +93,10 @@ foreach ($products as $index => $product) {
                     data-id='" . htmlspecialchars($product['id']) . "' 
                     data-name='" . htmlspecialchars($product['name']) . "' 
                     data-cost-price='" . htmlspecialchars($product['cost_price']) . "' 
-                    data-wholesale-price='" . htmlspecialchars($product['wholesale_price']) . "' 
                     data-price='" . htmlspecialchars($product['price']) . "' 
                     data-selling-price='" . htmlspecialchars($product['selling_price']) . "' 
                     data-warranty='" . htmlspecialchars($product['warranty']) . "' 
-                    data-stock='" . htmlspecialchars($product['stock']) . "' 
-                    data-discount-quantities='" . htmlspecialchars($product['discount_quantities']) . "' 
-                    data-discount-prices='" . htmlspecialchars($product['discount_prices']) . "'>
+                    data-stock='" . htmlspecialchars($product['stock']) . "'>
                     Edit
                 </button>
             </form>
@@ -118,6 +112,7 @@ foreach ($products as $index => $product) {
 
 
 
+
                             </tbody>
 
                         </table>
@@ -125,6 +120,44 @@ foreach ($products as $index => $product) {
                 </div>
             </div>
 
+
+  <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteProductLabel">
+                    <i class="fa fa-trash"></i> Delete Product
+                </h5>
+                <button class="close text-white" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form action="product-delete.php" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" id="deleteProductId" name="id">
+                    <p>Are you sure you want to delete this product?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    $('#deleteProductModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var productId = button.data('id'); // Extract product ID from data-* attributes
+
+        var modal = $(this);
+        modal.find('#deleteProductId').val(productId);
+    });
+});
+
+</script>
             <p class="small text-center text-muted my-5">
             </p>
 
@@ -156,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const id = this.getAttribute('data-id');
             const name = this.getAttribute('data-name');
             const costPrice = this.getAttribute('data-cost-price');
-            const wholesalePrice = this.getAttribute('data-wholesale-price');
             const price = this.getAttribute('data-price');
             const sellingPrice = this.getAttribute('data-selling-price');
             const warranty = this.getAttribute('data-warranty');
@@ -167,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('editProductId').value = id;
                 document.getElementById('editProductName').value = name;
                 document.getElementById('editCostPrice').value = costPrice;
-                document.getElementById('editWholesalePrice').value = wholesalePrice;
                 document.getElementById('editPrice').value = price;
                 document.getElementById('editSellingPrice').value = sellingPrice;
                 document.getElementById('editStock').value = stock;
@@ -178,16 +209,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 warrantySelect.value = warranty;
 
                 // Populate discount fields
-                const discountQuantities = this.getAttribute('data-discount-quantities').split(
-                    ',');
-                const discountPrices = this.getAttribute('data-discount-prices').split(',');
+                // const discountQuantities = this.getAttribute('data-discount-quantities').split(
+                //     ',');
+                // const discountPrices = this.getAttribute('data-discount-prices').split(',');
 
-                document.getElementById('quantity1').value = discountQuantities[0] || '';
-                document.getElementById('price1').value = discountPrices[0] || '';
-                document.getElementById('quantity2').value = discountQuantities[1] || '';
-                document.getElementById('price2').value = discountPrices[1] || '';
-                document.getElementById('quantity3').value = discountQuantities[2] || '';
-                document.getElementById('price3').value = discountPrices[2] || '';
+                // document.getElementById('quantity1').value = discountQuantities[0] || '';
+                // document.getElementById('price1').value = discountPrices[0] || '';
+                // document.getElementById('quantity2').value = discountQuantities[1] || '';
+                // document.getElementById('price2').value = discountPrices[1] || '';
+                // document.getElementById('quantity3').value = discountQuantities[2] || '';
+                // document.getElementById('price3').value = discountPrices[2] || '';
             }
         });
     });

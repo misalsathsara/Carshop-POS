@@ -2,27 +2,19 @@
 
 include 'db.php'; // Include the database connection file
 
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $lastSaleId = $_GET['id'];
 // Fetch the last sale ID
-$query = "SELECT * FROM sales ORDER BY saleid DESC LIMIT 1";
+$query = "SELECT saleid, username, contact, vehicle_number, subTotal, paid_amount, balance FROM sales ORDER BY saleid DESC LIMIT 1";
 $result = mysqli_query($conn, $query);
-$discount1 = 0;
-$netTotal = 0;
+
 if ($row = mysqli_fetch_assoc($result)) {
-    $lastSaleId = $row['saleid'];
     $total = $row['subTotal'];
     $paid = $row['paid_amount'];
     $balance = $row['balance'];
     $vehicle_no =  $row['username'];
     $customer_name =  $row['contact'];
     $mobile =  $row['vehicle_number'];
-    $numberOfItem =  $row['numberOfItem'];
-    $Customer_Profit =  $row['Customer_Profit'];
-    $Total_Discount =  $row['Total_Discount'];
-
-    $discount1 = $Customer_Profit - $Total_Discount;
-
-    $netTotal = $total + $Customer_Profit;
-
 } else {
     $lastSaleId = '----'; // Handle the case when there are no rows
 }
@@ -133,7 +125,7 @@ if (isset($gpsDetails[0])) {
 } else {
     $gps = ['app_name' => '', 'server' => '', 'username' => '', 'password' => '', 'sim_no' => '']; // Default values if no result
 }
-
+}
 $stmt->close();
 $conn->close(); // Close the connection
 
@@ -160,49 +152,35 @@ flush();
 
         .container {
             width: 100%;
-            max-width: 166mm !important; /* Set the maximum width to fit within B5 paper with margins */
+            max-width: 176mm; /* Set the maximum width to match B5 paper width */
             margin: auto;
-            padding: 10mm; /* Adjusted padding for better fit on B5 paper */
+            padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             background: white;
             display: flex;
             flex-direction: column;
-            min-height: 240mm; 
+            min-height: 100vh; /* Ensure the container takes up at least the full viewport height */
         }
 
         .header {
-            position: relative;
-            width: 166mm !important;
             display: flex;
-            justify-content:end;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 20px;
-            /* border-bottom: 1px solid #000;  */
+            border-bottom: 1px solid #000; /* Slightly less bold divider line after header */
             padding-bottom: 10px;
-            background-color: #3333334f;
         }
 
         .header .logo {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 350px;
-            height: 120px;
-            border-bottom-right-radius: 130px;
-            margin-right: 100%;
             margin-right: 20px;
-            background-color: #000000;
         }
 
         .header .logo img {
-            margin-top: 6px;
-            margin-left: 60px;
-            max-width: 180px; /* Adjusted size for better visibility */
+            max-width: 120px; /* Adjusted size for better visibility */
         }
 
         .header .details {
-            padding-top: 12px ;
-            padding-right: 12px;
-            text-align: right;
+            text-align: center;
         }
 
         .header .details h1 {
@@ -267,7 +245,7 @@ flush();
 
         .payment-info {
             border-top: 1px solid #000;
-            /* border-bottom: 1px solid #000; */
+            border-bottom: 1px solid #000;
             padding: 10px;
             margin-top: 20px;
             display: flex;
@@ -278,29 +256,12 @@ flush();
         .payment-info .label {
             font-weight: bold;
         }
-        .header-title{
-            margin-top: -30px;
-            font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-            
-            text-align: right;
-            
-        }
-        .header-title h1{
-            text-decoration: underline;
-            margin-right: 120px;
-        }
-        .header-title p{
-            font-weight: bold;
-            margin-left: 10px;
-            margin-top: -40px;
-        }
-        .gps-info .label{
-            width: 100px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .gps-info .label span{
-            font-weight: bold;
+
+        .footer {
+            text-align: center;
+            font-size: 10px; /* Smaller font size for footer text */
+            padding: 10px;
+            margin-top: auto; /* Push the footer to the bottom */
         }
     </style>
 </head>
@@ -309,7 +270,7 @@ flush();
     <div class="container">
         <div class="header">
             <div class="logo">
-                <img src="logo2.png" alt="Logo">
+                <img src="logo.png" alt="Logo">
             </div>
             <div class="details">
                 <h1>AUTO LANKA</h1>
@@ -318,12 +279,8 @@ flush();
                 <p>0914552161 / 0761146550</p>
             </div>
         </div>
-        <div class="header-title">
-                <h1>Sales Invoice</h1>
-                <p>Gonapinuwala</p>
-            </div>
+        
         <div class="header-table">
-            
             <div class="table-left">
                 <table>
                     <tr>
@@ -387,111 +344,50 @@ flush();
 
         <?php if (!empty($gps['app_name'])): ?>
         <div class="gps-info">
-            <h2 style="font-size: .8rem; text-decoration: underline; letter-spacing: 1px;">GPS Details</h2>
+            <h2>GPS Details</h2>
             <table>
                 <tr>
-                    <td class="label">App Name <span>: </span></td>
+                    <td class="label">App Name</td>
                     <td><?php echo htmlspecialchars($gps['app_name']); ?></td>
                 </tr>
                 <tr>
-                    <td class="label">Server <span>: </span></td>
+                    <td class="label">Server</td>
                     <td><?php echo htmlspecialchars($gps['server']); ?></td>
                 </tr>
                 <tr>
-                    <td class="label">Username <span>: </span></td>
+                    <td class="label">Username</td>
                     <td><?php echo htmlspecialchars($gps['username']); ?></td>
                 </tr>
                 <tr>
-                    <td class="label">Password <span>: </span></td>
+                    <td class="label">Password</td>
                     <td><?php echo htmlspecialchars($gps['password']); ?></td>
                 </tr>
                 <tr>
-                    <td class="label">SIM No <span>: </span></td>
+                    <td class="label">SIM No</td>
                     <td><?php echo htmlspecialchars($gps['sim_no']); ?></td>
                 </tr>
             </table>
         </div>
         <?php endif; ?>
 
-<style>
-     .footer {
-            text-align: center;
-            font-size: 10px; 
-            padding: 10px;
-            margin-top: auto; 
-        }
-        .footer .label{
-            letter-spacing: 1px;
-            display: flex;
-            /* border: 1px solid red; */
-            justify-content: space-between;
-            text-align: left;
-            
-        }
-
-         #footer-table{
-        width: 40%;
-       }
-       #footer-table .footer-value{ 
-        text-align: right;
-        width: 60%;
-
-       }
-       .horizontal-line{
-        position: absolute;
-        border-top: 1px solid rgb(0, 0, 0);
-        height: 1px;
-        width: 100%;
-       }
-</style>
-
-
         <div class="footer">
             <div class="payment-info">
-                <div style="font-size: .6rem;">Number Of Item - <?php echo htmlspecialchars(number_format($numberOfItem)); ?></div>
-                <table id="footer-table">
+                <div>Payment Information</div>
+                <table>
                     <tr>
-                        <td class="label">Gross Total<span>:</span></td>
-                        <td class="footer-value"><?php echo htmlspecialchars(number_format($netTotal, 2)); ?></td>
-                    </tr>
-                    <tr>
-                        <td class="label" style="font-size: .6rem; ">Discount<span>:</span></td>
-                        <td class="footer-value">-   <?php echo htmlspecialchars(number_format($discount1, 2)); ?></td>
-                    </tr>
-                    <?php if ($Total_Discount != '0'): ?>
-                    <tr>
-                        <td class="label" style="font-size: .6rem; ">Extra Discount<span>:</span></td>
-                        <td class="footer-value">-   <?php echo htmlspecialchars(number_format($Total_Discount, 2)); ?></td>
-                    </tr>
-                    <?php endif; ?>
-                    <tr style="position: relative;">
-                        <td class="horizontal-line"></td>
+                        <td class="label">Subtotal</td>
+                        <td><?php echo htmlspecialchars(number_format($total, 2)); ?></td>
                     </tr>
                     <tr>
-                        <td class="label">Net Total<span>:</span></td>
-                        <td class="footer-value"><?php echo htmlspecialchars(number_format($total, 2)); ?></td>
+                        <td class="label">Cash</td>
+                        <td><?php echo htmlspecialchars(number_format($paid, 2)); ?></td>
                     </tr>
                     <tr>
-                        <td class="label" >Cash<span>:</span></td>
-                        <td class="footer-value" ><?php echo htmlspecialchars(number_format($paid, 2)); ?></td>
-                    </tr>
-                    <tr style="position: relative;">
-                        <td class="horizontal-line"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">Balance<span>:</span></td>
-                        <td class="footer-value"><?php echo htmlspecialchars(number_format($balance, 2)); ?></td>
-                    </tr>
-                    <tr style="position: relative;">
-                        <td class="horizontal-line"></td>
-                    </tr>
-                    <tr style="position: relative;">
-                        <td class="horizontal-line"></td>
+                        <td class="label">Balance</td>
+                        <td><?php echo htmlspecialchars(number_format($balance, 2)); ?></td>
                     </tr>
                 </table>
             </div>
-            <p style="font-size: .6rem; font-weight: bold;">I, as the purchaser or authorized representative, hereby confirm that I have carefully read and understood all the terms and have received the goods in the expected condition.</p>
-            <p style="text-align: right; margin-top: 55px;">........................................ <span style="display: block;">Authorised by</span></p>
             <p>Thank you for your purchase!</p>
             <p>Terms and conditions apply.</p>
         </div>

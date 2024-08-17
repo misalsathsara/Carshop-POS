@@ -15,7 +15,7 @@
     // Define SQL query
     $sql = "SELECT s.saleid, s.username, s.vehicle_number, s.Total, s.Total_Discount, s.subTotal, s.paid_amount, s.balance, s.Date,
                    c.productName, c.qty, c.item_price, c.selling_price, c.total_price
-            FROM sales s
+            FROM pending s
             INNER JOIN cart c ON c.saleid = s.saleid
             ORDER BY s.Date DESC";
 
@@ -189,31 +189,136 @@ button {
     cursor: pointer;
 }
 
-/* Button styling */
-.view {
-    background-color: #007BFF; /* Blue background */
-    color: white; /* White text */
-    padding: 8px 16px; /* Padding for size */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 16px; /* Font size */
-    font-weight: bold; /* Bold text */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
+.payment-section {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Increased spacing between items */
+    padding: 10px; /* Added padding for better spacing */
+    background-color: #f8f9fa; /* Light background color */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    max-width: 60%; /* Restrict maximum width */
+    margin: 0 auto; /* Center horizontally */
 }
 
-.view:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+.payment-section select,
+.payment-section input[type="text"] {
+    padding: 8px 12px; /* Padding inside input fields */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 4px; /* Rounded corners for inputs */
+    font-size: 16px; /* Font size for readability */
 }
 
-.view:focus {
-    outline: 2px solid #0056b3; /* Outline for accessibility */
+.payment-section select {
+    flex: 1; /* Adjust width as needed */
 }
+
+.payment-section h3 {
+    margin: 0;
+    font-size: 24px; /* Larger font size for emphasis */
+    color: #333; /* Darker text color */
+}
+
+.payment-section button.update {
+    background-color: #007bff; /* Button background color */
+    color: #fff; /* Button text color */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Padding inside button */
+    border-radius: 4px; /* Rounded corners for button */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size for button */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+.payment-section button.update:hover {
+    background-color: #0056b3; /* Darker background color on hover */
+}
+
+
+
 </style>
 
+<br><br>
+<div class="payment-section">
+    <select name="" id="">
+    <?php
+            include 'db.php';
+            $query = "SELECT id, Name, credit FROM customer";
+            $result = mysqli_query($conn, $query);
+
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo '<option value="' . htmlspecialchars($row['id']) . '">' . htmlspecialchars($row['Name']) . '</option>';
+                }
+            } else {
+                echo '<option value="">No customers found</option>';
+            }
+        ?>
+    </select>
+    <h3 id="credit">Rs. 00.00</h3>
+    <input type="text" name="" id="">
+    <button class="update">UPDATE</button>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectElement = document.querySelector('.payment-section select');
+    const creditElement = document.querySelector('#credit');
+
+    selectElement.addEventListener('change', function() {
+        const customerId = selectElement.value;
+
+        if (customerId) {
+            fetch('getCredit.php?id=' + encodeURIComponent(customerId))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        creditElement.textContent = 'Rs. ' + data.credit;
+                    } else {
+                        creditElement.textContent = 'Rs. 00.00';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching credit:', error);
+                });
+        } else {
+            creditElement.textContent = 'Rs. 00.00';
+        }
+    });
+
+    document.querySelector('.payment-section .update').addEventListener('click', function() {
+        const customerId = selectElement.value;
+        const newCredit = document.querySelector('.payment-section input[type="text"]').value;
+
+        if (customerId && newCredit.trim() !== '') {
+            fetch('updateCredit.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'id': customerId,
+                    'credit': newCredit
+                })
+            })
+            .then(response => response.text())
+            .then(result => {
+                //alert(result); // Show a message or handle the response
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error updating credit:', error);
+            });
+        } else {
+            alert('Please select a customer and enter a credit value.');
+        }
+    });
+});
+</script>
 
             <div class="container">
               <div class="row">
                   <div class="search-bar">
-                      <input type="text" id="orderIdInput" placeholder="Search vehicle number ...">
+                  <input type="text" id="orderIdInput" placeholder="Search vehicle number ...">
                   </div>
                   <div class="button-group">
                       <button class="today"><i class="fas fa-calendar-day"></i> Today</button>
@@ -343,7 +448,24 @@ function viewsale(id) {
 </script>
 
         <style>
-          
+         .view {
+    background-color: #007BFF; /* Blue background */
+    color: white; /* White text */
+    padding: 8px 16px; /* Padding for size */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    font-weight: bold; /* Bold text */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.view:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.view:focus {
+    outline: 2px solid #0056b3; /* Outline for accessibility */
+}
+ 
         .gps-btn {
             background-color: rgb(255, 0, 0);
             color: white;
@@ -548,6 +670,17 @@ document.addEventListener('DOMContentLoaded', function() {
         filterTableByGPS();
     });
 
+    // function filterTableBySaleId(saleId) {
+    //     const rows = document.querySelectorAll('tbody tr');
+    //     rows.forEach(row => {
+    //         const cell = row.querySelector('td:first-child');
+    //         if (cell && cell.textContent.includes(saleId)) {
+    //             row.style.display = '';
+    //         } else {
+    //             row.style.display = 'none';
+    //         }
+    //     });
+    // }
     function filterTableBySaleId(saleId) {
     const rows = document.querySelectorAll('tbody tr');
     rows.forEach(row => {

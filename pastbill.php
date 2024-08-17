@@ -2,9 +2,12 @@
 
 include 'db.php'; // Include the database connection file
 
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $lastSaleId = $_GET['id'];
 // Fetch the last sale ID
-$query = "SELECT * FROM sales ORDER BY saleid DESC LIMIT 1";
+$query = "SELECT * FROM sales WHERE saleid= $lastSaleId";
 $result = mysqli_query($conn, $query);
+
 $discount1 = 0;
 $netTotal = 0;
 if ($row = mysqli_fetch_assoc($result)) {
@@ -133,7 +136,7 @@ if (isset($gpsDetails[0])) {
 } else {
     $gps = ['app_name' => '', 'server' => '', 'username' => '', 'password' => '', 'sim_no' => '']; // Default values if no result
 }
-
+}
 $stmt->close();
 $conn->close(); // Close the connection
 
