@@ -66,7 +66,7 @@
         <!-- Navbar -->
         <ul class="navbar-nav ml-auto ml-md-0">
             <li class="nav-item">
-                <a class="btn btn-logout" href="https://autolankacaraudiopersonalpos.cc/login.php">
+                <a class="btn btn-logout" href="logout.php">
                     <i class="fa fa-power-off"></i> Logout
                 </a>
             </li>

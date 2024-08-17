@@ -3,6 +3,11 @@
   include 'header1.php';
   include 'db.php';
 
+  if(empty(isset($_SESSION['position']))){
+    header('location:login.php');
+    exit();
+  }
+
   $sql = "SELECT * FROM products";
   $result = $conn->query($sql);
 
